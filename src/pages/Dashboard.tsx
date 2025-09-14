@@ -1,9 +1,9 @@
-import TestButton from "../components/TestButton";
-
-function Dashboard() {
+const Dashboard = () => {
     return (
-        <TestButton />
+        <div>Dashboard</div>
     )
 }
 
-export default Dashboard;
+export {
+    Dashboard
+};
