@@ -1,0 +1,30 @@
+Folder
+
+1. Public --> build assets
+2. Src --> whole codebase
+    2a. assets --> images and other files
+    2b. components --> components
+    2c. layouts --> layouts
+    2d. pages --> pages
+    2e. providers --> contexts
+    2f. routes --> routes
+    2g. services --> services
+    2h. utils --> helper global functions
+    2i. App.css
+    2j. App.tsx
+    2k. index.css
+    2l. main.tsx
+
+Component Structure
+
+1. Imports
+2. Consts Related to Imports eg: Antd Typegraphy Props
+3. Interfaces or Types
+4. Component Fucnction with const and arrow function
+    4a. States or any context etc using any other component
+    4b. Custom Constants
+    4c. Custom Functions
+    4d. Use Effects
+    4e. Any inner component props long details --> as a constant
+    4f. Return statement
+5. Export Component with named approach
