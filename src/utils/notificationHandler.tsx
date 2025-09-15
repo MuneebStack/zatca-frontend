@@ -1,4 +1,5 @@
 import { List, notification, Typography } from 'antd';
+import axios from 'axios';
 import type { AxiosError } from 'node_modules/axios/index.d.cts';
 import React from 'react';
 
@@ -42,7 +43,11 @@ const frontendErrorHandler = (error: FrontendErrorType) => {
     });
 }
 
-const apiErrorHandler = (error: AxiosError) => {
+const apiErrorHandler = (error: AxiosError | any) => {
+    if (axios.isCancel(error) || error.code == "ERR_CANCELED") {
+        return Promise.reject(error);
+    }
+    
     let message: React.ReactNode = 'Error';
     let description: React.ReactNode = 'Something went wrong';
 

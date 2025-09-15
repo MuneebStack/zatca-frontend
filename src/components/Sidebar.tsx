@@ -2,6 +2,7 @@ import { Layout, Menu, Row, Typography } from "antd";
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/providers/AuthContext";
 
 const { Sider } = Layout;
 const { Title, Text } = Typography;
@@ -10,6 +11,7 @@ const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const { configs } = useAuth();
 
     useEffect(() => {
         const checkScreen = () => setIsMobile(window.innerWidth < 768);
@@ -52,7 +54,7 @@ const Sidebar = () => {
             >
                 {((isMobile ? true : collapsed && !hovered) || !collapsed) && (
                     <Title level={4} style={{ margin: 0 }}>
-                        MyApp
+                        {configs.app_name}
                     </Title>
                 )}
 

@@ -3,9 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { frontendErrorHandler } from "@/utils/notificationHandler";
 import type { User } from "@/utils/api";
 import { FullPageLoader } from "@/components/FullPageLoader";
+import { axiosClient } from "@/services/axiosClient";
+
+type configType = Record<string, any>;
 
 interface AuthContextType {
     user?: User;
+    configs: configType;
     token?: string;
     isAuthenticated: boolean;
     login: (user: User, token: string, expiresAt: string) => void;
@@ -20,12 +24,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({ children }: AuthProviderType) => {
     const [user, setUser] = useState<User>();
+    const [configs, setConfigs] = useState<configType>({});
     const [token, setToken] = useState<string>();
     const [loading, setLoading] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
 
     const isAuthenticated = !!user;
+
     const guestRoutes = ["/login"];
     const isGuestRoute = guestRoutes.includes(location.pathname);
 
@@ -33,7 +39,6 @@ const AuthProvider = ({ children }: AuthProviderType) => {
         setUser(user);
         setToken(token);
 
-        localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
         localStorage.setItem("expires_at", expiresAt);
 
@@ -58,44 +63,61 @@ const AuthProvider = ({ children }: AuthProviderType) => {
         navigate("/login");
     };
 
-    useEffect(() => {
-        if (isGuestRoute) {
-            setLoading(false);
-            return;
-        }
-
-        const storedUser = localStorage.getItem("user");
-        const storedToken = localStorage.getItem("token");
-        const storedExpiresAt = localStorage.getItem("expires_at");
-
-        if (!storedUser || !storedToken || !storedExpiresAt) {
-            logout();
-            return;
-        }
-
-        const storedExpiryTime = parseInt(storedExpiresAt);
+    const handleToken = (): NodeJS.Timeout | undefined => {
+        let timeoutId : NodeJS.Timeout | undefined;
         const now = Date.now();
+        const storedToken = localStorage.getItem("token");
+        const storedExpiresAt = parseInt(localStorage.getItem("expires_at") || "0");
 
-        if (storedExpiryTime <= now) {
+        if (storedToken && storedExpiresAt && storedExpiresAt > now) {
+            setToken(storedToken);
+            timeoutId = setTimeout(() => {
+                logout(true);
+            }, storedExpiresAt - now - 5000);
+        } else {
             logout(true);
-            setLoading(false);
-            return;
         }
 
-        const timeoutId = setTimeout(() => {
-            logout(true);
-        }, storedExpiryTime - now - 5000);
+        return timeoutId;
+    }
 
-        setUser(JSON.parse(storedUser));
-        setToken(storedToken);
+    const handleSession = (): AbortController | undefined => {
+        const controller = new AbortController();
+        axiosClient
+            .get("/portal/session", { signal: controller.signal })
+            .then((response) => {
+                if (response?.data?.data) {
+                    const { user, configs } = response.data.data;
+                    setUser(user);
+                    setConfigs(configs);
+                }
+            })
+            .catch((error) => (error))
 
-        setLoading(false);
+        return controller;
+    }
 
-        return () => clearTimeout(timeoutId);
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout | undefined;
+        let controller: AbortController | undefined;
+
+        if (!isGuestRoute) {
+            timeoutId = handleToken();
+            if (Object.keys(configs).length === 0) controller = handleSession();
+        }
+
+        return () => {
+            timeoutId && clearTimeout(timeoutId);
+            controller && controller.abort();
+        };
     }, [location.pathname]);
 
+    useEffect(() => {
+        if (isAuthenticated) setLoading(false);
+    }, [user]);
+
     return (
-        <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ user, configs, token, isAuthenticated, login, logout }}>
             {loading ? <FullPageLoader /> : children}
         </AuthContext.Provider>
     );

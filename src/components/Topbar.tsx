@@ -13,8 +13,7 @@ const { Title } = Typography;
 const TopBar = () => {
     const [loading, setLoading] = useState(false);
     const { isDark, switchTheme } = useTheme();
-    const { user, logout } = useAuth();
-    const isAuthenticated = !!user;
+    const { user, isAuthenticated, configs, logout } = useAuth();
     const { showLoader, hideLoader } = useLoader();
 
     const avatarText = user?.name?.charAt(0)?.toUpperCase() || "?";
@@ -69,7 +68,7 @@ const TopBar = () => {
         <Header className="flex justify-end items-center px-4">
             {!isAuthenticated && (
                 <Title level={4} className="!mb-0 mr-auto">
-                    MyApp
+                    {configs.app_name}
                 </Title>
             )}
 
