@@ -113,6 +113,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
     }, [location.pathname]);
 
     useEffect(() => {
+        if (isGuestRoute) setLoading(false);
         if (isAuthenticated) setLoading(false);
     }, [user]);
 

@@ -71,7 +71,7 @@ const Sidebar = () => {
             <Menu
                 className="!border-r-0"
                 mode="inline"
-                defaultSelectedKeys={["/"]}
+                selectedKeys={[location.pathname]}
                 items={items}
             />
         </Sider>
