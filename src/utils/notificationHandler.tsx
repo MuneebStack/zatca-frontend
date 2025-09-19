@@ -1,4 +1,5 @@
-import { List, notification, Typography } from 'antd';
+import { getNotification } from '@/services/antdAppInstances';
+import { List, Typography } from 'antd';
 import axios from 'axios';
 import type { AxiosError } from 'node_modules/axios/index.d.cts';
 import React from 'react';
@@ -28,6 +29,7 @@ const formatFieldName = (field: string) => {
 };
 
 const frontendErrorHandler = (error: FrontendErrorType) => {
+    const notification = getNotification();
     const message = <Text strong>{error.message}</Text>
     const description = (
         <Paragraph type="danger">
@@ -44,6 +46,7 @@ const frontendErrorHandler = (error: FrontendErrorType) => {
 }
 
 const apiErrorHandler = (error: AxiosError | any) => {
+    const notification = getNotification();
     if (axios.isCancel(error) || error.code == "ERR_CANCELED") {
         return Promise.reject(error);
     }
@@ -95,6 +98,7 @@ const apiErrorHandler = (error: AxiosError | any) => {
 };
 
 const successMessageHandler = (data: ApiSuccessType) => {
+    const notification = getNotification();
     const message = <Text strong>{data.message}</Text>
     const description = (
         <Paragraph type="success">
