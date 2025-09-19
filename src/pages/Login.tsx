@@ -14,10 +14,11 @@ const Login = () => {
             .post('auth/login', values)
             .then((response) => {
                 if (response?.data?.data) {
-                    const { user, auth_token, expires_at } = response.data.data;
-                    login(user, auth_token, new Date(expires_at).getTime().toString())
+                    const { auth_token, expires_at } = response.data.data;
+                    login(auth_token, new Date(expires_at).getTime().toString())
                 }
             })
+            .catch(error => (error))
             .finally(() => setLoading(false))
     };
 
