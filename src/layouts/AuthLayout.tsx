@@ -11,7 +11,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
       <Sidebar />
       <Layout>
         <TopBar />
-        <Content className="p-6">{children}</Content>
+        <Content className="p-6 relative">{children}</Content>
       </Layout>
     </div>
     // </Layout>
