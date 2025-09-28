@@ -42,7 +42,7 @@ const Dashboard = () => {
             {counts && entries.length > 0 ? (
                 <Row gutter={[16, 16]}>
                     {entries.map(([key, value]) => (
-                        <Col xs={24} sm={12} md={8} key={key}>
+                        <Col xs={24} sm={12} md={8} lg={6} key={key}>
                             <Card>
                                 <Flex align="center" gap={8}>
                                     {iconMap[key] ?? null}

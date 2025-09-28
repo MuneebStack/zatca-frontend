@@ -6,6 +6,7 @@ import { useAuth } from "@/providers/AuthContext";
 
 const { Sider } = Layout;
 const { Title, Text } = Typography;
+const AntdSMBreakpoint = 768;
 
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -14,7 +15,7 @@ const Sidebar = () => {
     const { configs } = useAuth();
 
     useEffect(() => {
-        const checkScreen = () => setIsMobile(window.innerWidth < 768);
+        const checkScreen = () => setIsMobile(window.innerWidth < AntdSMBreakpoint);
         checkScreen();
         window.addEventListener("resize", checkScreen);
         return () => window.removeEventListener("resize", checkScreen);

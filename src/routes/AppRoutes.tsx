@@ -5,8 +5,8 @@ import { Users } from '@/pages/Users';
 import { Settings } from '@/pages/Settings';
 import { GuestLayout } from '@/layouts/GuestLayout';
 import { AuthLayout } from '@/layouts/AuthLayout';
-import { PrivateRoute } from './PrivateRoute';
-import { PublicRoute } from './PublicRoute';
+import { PrivateRoute } from '@/middlewares/PrivateRoute';
+import { PublicRoute } from '@/middlewares/PublicRoute';
 import { Suspense } from 'react';
 import { FullPageLoader } from '@/components/FullPageLoader';
 

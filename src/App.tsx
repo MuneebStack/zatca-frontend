@@ -2,7 +2,6 @@ import './App.css'
 import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from '@/providers/ThemeContext'
 import { AuthProvider } from '@/providers/AuthContext'
-import { LoaderProvider } from '@/providers/LoaderContext'
 import { AppRoutes } from '@/routes/AppRoutes'
 import { App as AntdApp } from 'antd';
 import { useEffect } from 'react'
@@ -13,12 +12,10 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <LoaderProvider>
-            <AntdApp>
-              <Initializer />
-              <AppRoutes />
-            </AntdApp>
-          </LoaderProvider>
+          <AntdApp>
+            <Initializer />
+            <AppRoutes />
+          </AntdApp>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
@@ -29,8 +26,8 @@ function Initializer() {
   const { notification, message, modal } = AntdApp.useApp();
 
   useEffect(() => {
-    setAppInstances({notification, message, modal});
-  }, [notification]);
+    setAppInstances({ notification, message, modal });
+  }, []);
 
   return null;
 }
