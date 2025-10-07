@@ -3,6 +3,7 @@ import { List, Typography } from 'antd';
 import axios from 'axios';
 import type { AxiosError } from 'node_modules/axios/index.d.cts';
 import React from 'react';
+import { capitalize } from '.';
 
 const { Text, Paragraph } = Typography;
 
@@ -21,12 +22,6 @@ type ApiSuccessType = {
     message: string;
     description: string;
 }
-
-const formatFieldName = (field: string) => {
-    return field
-        .replace(/[_-]/g, ' ')
-        .replace(/\b\w/g, char => char.toUpperCase());
-};
 
 const frontendErrorHandler = (error: FrontendErrorType) => {
     const notification = getNotification();
@@ -65,7 +60,7 @@ const apiErrorHandler = (error: AxiosError | any) => {
                     dataSource={Object.entries(data.errors)}
                     renderItem={([field, messages]) => (
                         <List.Item>
-                            <Text strong>{formatFieldName(field)}:</Text>&nbsp;
+                            <Text strong>{capitalize(field, /[-_]/g)}:</Text>&nbsp;
                             <Text type="danger">{(messages as string[]).join(', ')}</Text>
                         </List.Item>
                     )}

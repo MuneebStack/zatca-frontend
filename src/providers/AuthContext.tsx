@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { frontendErrorHandler } from "@/utils/notificationHandler";
 import { FullPageLoader } from "@/components/FullPageLoader";
 import { axiosClient } from "@/services/axiosClient";
-import type { User } from "@/types/api";
+import type { User } from "@/types/user";
 
 type configType = Record<string, any>;
 
@@ -69,7 +69,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
                 logout(true);
             }, storedExpiresAt - now - 5000);
         } else {
-            logout(true);
+            logout();
         }
 
         return timeoutId;

@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Login } from '@/pages/Login';
+import { Login } from '@/pages/Auth/Login';
 import { Dashboard } from '@/pages/Dashboard';
 import { Users } from '@/pages/Users';
 import { Settings } from '@/pages/Settings';
@@ -9,6 +9,10 @@ import { PrivateRoute } from '@/middlewares/PrivateRoute';
 import { PublicRoute } from '@/middlewares/PublicRoute';
 import { Suspense } from 'react';
 import { FullPageLoader } from '@/components/FullPageLoader';
+import { CreateUser } from '@/pages/Users/create';
+import { ViewUser } from '@/pages/Users/show';
+import { EditUser } from '@/pages/Users/edit';
+import { Tokens } from '@/pages/Tokens';
 
 export function AppRoutes() {
   return (
@@ -45,6 +49,48 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/users/create"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <CreateUser />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/users/edit/:id"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <EditUser />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/users/view/:id"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <ViewUser />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/tokens"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <Tokens />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/settings"
           element={

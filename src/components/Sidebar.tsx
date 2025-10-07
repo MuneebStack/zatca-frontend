@@ -1,5 +1,5 @@
 import { Layout, Menu, Row, Typography } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined } from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined, ApiOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/providers/AuthContext";
@@ -31,6 +31,11 @@ const Sidebar = () => {
             key: "/users",
             icon: <UserOutlined />,
             label: <Link to="/users">Users</Link>,
+        },
+        {
+            key: "/tokens",
+            icon: <ApiOutlined />,
+            label: <Link to="/tokens">Tokens</Link>,
         },
         {
             key: "/settings",
@@ -79,6 +84,6 @@ const Sidebar = () => {
     );
 };
 
-export { 
+export {
     Sidebar
 }

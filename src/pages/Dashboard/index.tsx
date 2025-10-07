@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Typography, Flex } from "antd";
+import { Card, Row, Col, Typography, Flex, Empty } from "antd";
 import type { DashboardCounts } from "@/types/dashboard";
 import { UserOutlined } from "@ant-design/icons";
 import { axiosClient } from "@/services/axiosClient";
@@ -58,7 +58,7 @@ const Dashboard = () => {
                     ))}
                 </Row>
             ) : (
-                !loading && <Text>No data available</Text>
+                !loading && <Empty />
             )}
         </>
     );
