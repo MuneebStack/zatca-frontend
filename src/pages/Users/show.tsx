@@ -1,10 +1,12 @@
-import { Card, Button, Descriptions } from "antd";
+import { Card, Button, Descriptions, Typography, Flex } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { axiosClient } from "@/services/axiosClient";
 import type { UserType } from "@/types/user";
 import { formatDate } from "@/utils/dateFormatter";
+
+const { Text } = Typography;
 
 const ViewUser = () => {
     const [loading, setLoading] = useState(true);
@@ -36,18 +38,15 @@ const ViewUser = () => {
         <>
             <Card
                 title={
-                    <div className="flex justify-between items-center">
-                        <span>User Details</span>
-                        <div>
-                            <Button
-                                icon={<ArrowLeftOutlined />}
-                                onClick={() => navigate(-1)}
-                                style={{ marginRight: 8 }}
-                            >
-                                Back
-                            </Button>
-                        </div>
-                    </div>
+                    <Flex justify="space-between" align="center">
+                        <Text>User Details</Text>
+                        <Button
+                            icon={<ArrowLeftOutlined />}
+                            onClick={() => navigate(-1)}
+                        >
+                            Back
+                        </Button>
+                    </Flex>
                 }
                 loading={loading}
             >

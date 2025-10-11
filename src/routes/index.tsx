@@ -13,6 +13,9 @@ import { CreateUser } from '@/pages/Users/create';
 import { ViewUser } from '@/pages/Users/show';
 import { EditUser } from '@/pages/Users/edit';
 import { Tokens } from '@/pages/Tokens';
+import { Permissions } from '@/pages/Permissions';
+import { RolePermissionsPage } from '@/pages/Permissions/RolePermissionPage';
+import { UserPermissionsPage } from '@/pages/Permissions/UserPermissionPage';
 
 export function AppRoutes() {
   return (
@@ -86,6 +89,37 @@ export function AppRoutes() {
             <PrivateRoute>
               <AuthLayout>
                 <Tokens />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/permissions"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <Permissions />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/permissions/roles/:id"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <RolePermissionsPage />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/permissions/users/:id"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <UserPermissionsPage />
               </AuthLayout>
             </PrivateRoute>
           }

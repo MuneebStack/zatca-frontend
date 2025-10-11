@@ -1,5 +1,5 @@
 import { Layout, Menu, Row, Typography } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined, ApiOutlined } from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined, ApiOutlined, SafetyOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/providers/AuthContext";
@@ -36,6 +36,11 @@ const Sidebar = () => {
             key: "/tokens",
             icon: <ApiOutlined />,
             label: <Link to="/tokens">Tokens</Link>,
+        },
+        {
+            key: "/permissions",
+            icon: <SafetyOutlined />,
+            label: <Link to="/permissions">Permissions</Link>,
         },
         {
             key: "/settings",
