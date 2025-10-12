@@ -40,7 +40,17 @@ const Sidebar = () => {
         {
             key: "/permissions",
             icon: <SafetyOutlined />,
-            label: <Link to="/permissions">Permissions</Link>,
+            label: "Permissions",
+            children: [
+                {
+                    key: "/permissions/roles",
+                    label: <Link to="/permissions/roles">Roles</Link>,
+                },
+                {
+                    key: "/permissions/users",
+                    label: <Link to="/permissions/users">Users</Link>,
+                },
+            ],
         },
         {
             key: "/settings",
