@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Table, Popconfirm, Modal, Typography, Flex, Form } from "antd";
+import { Button, Table, Popconfirm, Modal, Typography, Flex, Form, Switch } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { axiosClient } from "@/services/axiosClient";
 import type { ColumnsType } from "antd/es/table";
@@ -24,6 +24,25 @@ const Tokens = () => {
     const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
     const [generatedToken, setGeneratedToken] = useState<string>();
     const [form] = Form.useForm();
+
+    const onUpdate = (tokenId: number, values: any) => {
+        setLoading(true);
+        axiosClient
+            .patch(`portal/tokens/${tokenId}`, values)
+            .then(({ data: responseData }) => {
+                if (responseData?.data) {
+                    const payload = responseData.data;
+                    const updatedToken = payload.data;
+
+                    setTokens((prevTokens) => prevTokens.map((token) => token.id === updatedToken.id ? {
+                        ...updatedToken,
+                        user: token.user,
+                    } : token));
+                    successMessageHandler(responseData);
+                }
+            })
+            .finally(() => setLoading(false))
+    }
 
     const onDelete = (tokenId: number) => {
         setLoading(true);
@@ -108,18 +127,35 @@ const Tokens = () => {
         {
             title: "Action",
             key: "action",
-            render: (_, record) => (
-                <Popconfirm
-                    title="Are you sure to delete this token?"
-                    okText="Yes"
-                    cancelText="No"
-                    onConfirm={() => onDelete(record.id)}
-                >
-                    <DeleteOutlined
-                        className="cursor-pointer !text-red-600"
-                    />
-                </Popconfirm>
-            ),
+            children: [
+                {
+                    title: "Active",
+                    key: "active",
+                    align: "center",
+                    render: (_, record) => (
+                        <Switch
+                            checked={record.is_active}
+                            size="small"
+                            onChange={(checked) => onUpdate(record.id, { is_active: checked })}
+                        />
+                    ),
+                },
+                {
+                    title: "Delete",
+                    key: "delete",
+                    align: "center",
+                    render: (_, record) => (
+                        <Popconfirm
+                            title="Are you sure to delete this token?"
+                            okText="Yes"
+                            cancelText="No"
+                            onConfirm={() => onDelete(record.id)}
+                        >
+                            <DeleteOutlined className="cursor-pointer text-red-600" />
+                        </Popconfirm>
+                    ),
+                },
+            ],
         },
     ];
 
