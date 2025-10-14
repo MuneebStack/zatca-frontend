@@ -17,6 +17,7 @@ import { RolePermissionsPage } from '@/pages/Permissions/RolePermissionPage';
 import { UserPermissionsPage } from '@/pages/Permissions/UserPermissionPage';
 import { RolesPermissions } from '@/pages/Permissions/RolesPermissions';
 import { UsersPermissions } from '@/pages/Permissions/UsersPermissions';
+import { Navigations } from '@/pages/Navigations';
 
 export function AppRoutes() {
   return (
@@ -131,6 +132,17 @@ export function AppRoutes() {
             <PrivateRoute>
               <AuthLayout>
                 <UserPermissionsPage />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/navigations"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <Navigations />
               </AuthLayout>
             </PrivateRoute>
           }
