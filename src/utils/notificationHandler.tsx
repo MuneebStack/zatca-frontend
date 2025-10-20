@@ -8,33 +8,33 @@ import { capitalize } from '.';
 const { Text, Paragraph } = Typography;
 
 type FrontendErrorType = {
+    title: string;
     message: string;
-    description: string;
 }
 
 type ApiErrorType = {
+    title?: string;
     message?: string;
-    description?: string;
     errors?: [];
 };
 
 type ApiSuccessType = {
+    title: string;
     message: string;
-    description: string;
 }
 
 const frontendErrorHandler = (error: FrontendErrorType) => {
     const notification = getNotification();
-    const message = <Text strong>{error.message}</Text>
-    const description = (
+    const title = <Text strong>{error.title}</Text>
+    const message = (
         <Paragraph type="danger">
-            {error.description}
+            {error.message}
         </Paragraph>
     );
 
     notification.error({
-        message,
-        description,
+        message: title,
+        description: message,
         placement: 'topRight',
         duration: 4.5
     });
@@ -45,16 +45,17 @@ const apiErrorHandler = (error: AxiosError | any) => {
     if (axios.isCancel(error) || error.code == "ERR_CANCELED") {
         return Promise.reject(error);
     }
-    
-    let message: React.ReactNode = 'Error';
-    let description: React.ReactNode = 'Something went wrong';
+
+    let title: React.ReactNode = 'Error';
+    let message: React.ReactNode = 'Something went wrong';
 
     if (error?.response) {
         const data = error.response.data as ApiErrorType;
+        console.log(data);
 
         if (data?.errors && typeof data.errors === 'object' && data?.errors.length !== 0) {
-            message = <Text strong>{data?.message || message}</Text>
-            description = (
+            title = <Text strong>{data?.title || title}</Text>
+            message = (
                 <List
                     size="small"
                     dataSource={Object.entries(data.errors)}
@@ -67,15 +68,15 @@ const apiErrorHandler = (error: AxiosError | any) => {
                 />
             );
         } else if (data?.message) {
-            message = <Text strong>{data.message}</Text>
-            description = (
+            title = <Text strong>{data?.title || title}</Text>
+            message = (
                 <Paragraph type="danger">
-                    {data?.description || description}
+                    {data?.message || message}
                 </Paragraph>
             );
         }
     } else if (error?.request) {
-        description = (
+        message = (
             <Paragraph type="danger">
                 No response from server. Please check your connection
             </Paragraph>
@@ -83,8 +84,8 @@ const apiErrorHandler = (error: AxiosError | any) => {
     }
 
     notification.error({
-        message,
-        description,
+        message: title,
+        description: message,
         placement: 'topRight',
         duration: 5
     });
@@ -94,16 +95,16 @@ const apiErrorHandler = (error: AxiosError | any) => {
 
 const successMessageHandler = (data: ApiSuccessType) => {
     const notification = getNotification();
-    const message = <Text strong>{data.message}</Text>
-    const description = (
+    const title = <Text strong>{data.title}</Text>
+    const message = (
         <Paragraph type="success">
-            {data.description}
+            {data.message}
         </Paragraph>
     );
 
     notification.success({
-        message,
-        description,
+        message: title,
+        description: message,
         placement: 'topRight',
         duration: 4.5
     });

@@ -1,7 +1,7 @@
 import { Button, Card, Typography } from "antd";
 import { CheckOutlined, CopyOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { frontendErrorHandler, successMessageHandler } from "@/utils/notificationHandler";
+import { frontendErrorHandler } from "@/utils/notificationHandler";
 
 const { Text } = Typography;
 
@@ -16,15 +16,11 @@ const ViewToken = ({ generatedToken }: ViewTokenProps) => {
         try {
             await navigator.clipboard.writeText(generatedToken);
             setCopied(true);
-            successMessageHandler({
-                'message': 'Copied',
-                'description': 'The token has been copied successfully'
-            });
             setTimeout(() => setCopied(false), 1500);
         } catch {
             frontendErrorHandler({
-                'message': 'Error',
-                'description': 'Failed to copy token'
+                title: 'Error',
+                message: 'Failed to copy token'
             });
         }
     };

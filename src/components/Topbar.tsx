@@ -24,9 +24,9 @@ const TopBar = () => {
         setLoading(true);
         axiosClient
             .post('/portal/logout')
-            .then((response) => {
-                if (response?.data) {
-                    successMessageHandler(response.data);
+            .then(({ data: responseData }) => {
+                if (responseData) {
+                    successMessageHandler(responseData);
                     logout();
                 }
             })

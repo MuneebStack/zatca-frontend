@@ -3,12 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { frontendErrorHandler } from "@/utils/notificationHandler";
 import { FullPageLoader } from "@/components/FullPageLoader";
 import { axiosClient } from "@/services/axiosClient";
-import type { User } from "@/types/user";
+import type { UserType } from "@/types/user";
 
 type configType = Record<string, any>;
 
 interface AuthContextType {
-    user?: User;
+    user?: UserType;
     configs: configType;
     isAuthenticated: boolean;
     login: (token: string, expiresAt: string) => void;
@@ -22,7 +22,7 @@ interface AuthProviderType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({ children }: AuthProviderType) => {
-    const [user, setUser] = useState<User>();
+    const [user, setUser] = useState<UserType>();
     const [configs, setConfigs] = useState<configType>({});
     const [loading, setLoading] = useState(true);
     const location = useLocation();
@@ -50,8 +50,8 @@ const AuthProvider = ({ children }: AuthProviderType) => {
 
         if (showMessage) {
             frontendErrorHandler({
-                message: "Session expired",
-                description: "Your session has expired Please login again",
+                title: "Session expired",
+                message: "Your session has expired Please login again",
             });
         }
 
