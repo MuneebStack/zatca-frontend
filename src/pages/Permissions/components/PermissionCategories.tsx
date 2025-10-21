@@ -91,13 +91,13 @@ const PermissionCategories: React.FC<PermissionCategoriesProps> = ({ relatedType
             title: "Permission",
             dataIndex: "name",
             key: "name",
-            render: (name) => capitalize(name, "_"),
+            render: (name) => capitalize(name, /_/g),
         },
         {
             title: "Category",
             dataIndex: "category",
             key: "category",
-            render: (category) => capitalize(category, "_"),
+            render: (category) => capitalize(category, /_/g),
         },
         {
             title: "Assigned",
