@@ -1,5 +1,5 @@
-export interface Role {
+export interface RoleType {
     id: number;
     name: string;
-    permissions_count?: number;
+    permission_count?: number;
 }

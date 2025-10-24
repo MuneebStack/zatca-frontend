@@ -13,7 +13,7 @@ const UserPermissionsPage: React.FC = () => {
         <Card
             title={
                 <Flex justify="space-between" align="center">
-                    <Text>Manage User Permissions</Text>
+                    <Text>Manage User - Permissions</Text>
                     <Button
                         icon={<ArrowLeftOutlined />}
                         onClick={() => navigate(-1)}

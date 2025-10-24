@@ -2,13 +2,13 @@ import { Table, Button, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
-import type { Role } from "@/types/role";
+import type { RoleType } from "@/types/role";
 import type { PaginationType } from "@/types";
 import { axiosClient } from "@/services/axiosClient";
 import { capitalize } from "@/utils";
 
-const RoleListTable: React.FC = () => {
-    const [roles, setRoles] = useState<Role[]>([]);
+const PermissionRoleListTable: React.FC = () => {
+    const [roles, setRoles] = useState<RoleType[]>([]);
     const [loading, setLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -48,7 +48,7 @@ const RoleListTable: React.FC = () => {
         return () => controller.abort();
     }, [pagination.current, pagination.pageSize]);
 
-    const columns: ColumnsType<Role> = [
+    const columns: ColumnsType<RoleType> = [
         {
             title: "Role",
             dataIndex: "name",
@@ -56,10 +56,10 @@ const RoleListTable: React.FC = () => {
         },
         {
             title: "Total Permissions",
-            dataIndex: "permissions_count",
+            dataIndex: "permission_count",
             render: (_, record) => (
                 <Tag>
-                    {record?.permissions_count || 0}
+                    {record?.permission_count || 0}
                 </Tag>
             ),
         },
@@ -98,5 +98,5 @@ const RoleListTable: React.FC = () => {
 };
 
 export {
-    RoleListTable
+    PermissionRoleListTable
 }

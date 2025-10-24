@@ -13,7 +13,7 @@ const RolePermissionsPage: React.FC = () => {
         <Card
             title={
                 <Flex justify="space-between" align="center">
-                    <Text>Manage Role Permissions</Text>
+                    <Text>Manage Role - Permissions</Text>
                     <Button
                         icon={<ArrowLeftOutlined />}
                         onClick={() => navigate(-1)}

@@ -2,13 +2,13 @@ import { Table, Button, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
-import type { Role } from "@/types/role";
+import type { UserType } from "@/types/user";
 import type { PaginationType } from "@/types";
 import { axiosClient } from "@/services/axiosClient";
 import { capitalize } from "@/utils";
 
-const UserListTable: React.FC = () => {
-    const [users, setUsers] = useState<Role[]>([]);
+const PermissionUserListTable: React.FC = () => {
+    const [users, setUsers] = useState<UserType[]>([]);
     const [loading, setLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -48,9 +48,9 @@ const UserListTable: React.FC = () => {
         return () => controller.abort();
     }, [pagination.current, pagination.pageSize]);
 
-    const columns: ColumnsType<Role> = [
+    const columns: ColumnsType<UserType> = [
         {
-            title: "Role",
+            title: "Name",
             dataIndex: "name",
             render: (name) => capitalize(name, '-')
         },
@@ -60,10 +60,10 @@ const UserListTable: React.FC = () => {
         },
         {
             title: "Total Permissions",
-            dataIndex: "permissions_count",
+            dataIndex: "permission_count",
             render: (_, record) => (
                 <Tag>
-                    {record?.permissions_count || 0}
+                    {record?.permission_count || 0}
                 </Tag>
             ),
         },
@@ -102,5 +102,5 @@ const UserListTable: React.FC = () => {
 };
 
 export {
-    UserListTable
+    PermissionUserListTable
 }
