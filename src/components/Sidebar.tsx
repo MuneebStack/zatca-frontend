@@ -1,5 +1,5 @@
 import { Layout, Menu, Row, Typography } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined, ApiOutlined, SafetyOutlined } from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined, ApiOutlined, SafetyOutlined, EyeOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/providers/AuthContext";
@@ -49,6 +49,21 @@ const Sidebar = () => {
                 {
                     key: "/permissions/users",
                     label: <Link to="/permissions/users">Users</Link>,
+                },
+            ],
+        },
+        {
+            key: "/data-visibilities",
+            icon: <EyeOutlined />,
+            label: "Data Visibilities",
+            children: [
+                {
+                    key: "/data-visibilities/roles",
+                    label: <Link to="/data-visibilities/roles">Roles</Link>,
+                },
+                {
+                    key: "/data-visibilities/users",
+                    label: <Link to="/data-visibilities/users">Users</Link>,
                 },
             ],
         },
