@@ -1,22 +1,22 @@
 import { Flex, Typography } from "antd";
-import { DataVisibilityUserListTable } from "./components/DataVisibilityUserListTable";
+import { UserListTable } from "./components/UserListTable";
 
 const { Title } = Typography;
 
-const UsersDataVisibilities: React.FC = () => {
+const Users: React.FC = () => {
     return (
         <Flex vertical gap="middle">
             <Flex justify="space-between" align="center">
                 <Title level={4}>
-                    Users - Data Visibilities
+                    Users - Data Access
                 </Title>
             </Flex>
 
-            <DataVisibilityUserListTable />
+            <UserListTable />
         </Flex>
     );
 };
 
 export {
-    UsersDataVisibilities
+    Users
 } 

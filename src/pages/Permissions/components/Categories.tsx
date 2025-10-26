@@ -11,12 +11,12 @@ interface PermissionExtended extends Permission {
     loading: boolean
 }
 
-interface PermissionCategoriesProps {
+interface CategoriesProps {
     relatedType?: "role" | "user",
     relatedId?: string;
 }
 
-const PermissionCategories: React.FC<PermissionCategoriesProps> = ({ relatedType, relatedId }) => {
+const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }) => {
     const [permissions, setPermissions] = useState<PermissionExtended[]>([]);
     const [updatingIds, setUpdatingIds] = useState<Set<number>>(new Set());
     const [pagination, setPagination] = useState<PaginationType>({
@@ -130,4 +130,4 @@ const PermissionCategories: React.FC<PermissionCategoriesProps> = ({ relatedType
     );
 };
 
-export { PermissionCategories };
+export { Categories };

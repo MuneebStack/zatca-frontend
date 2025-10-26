@@ -3,17 +3,17 @@ import { Button, Select, Table, Form, Input, Row, Col, Divider, Space, message, 
 import type { ColumnsType } from "antd/es/table";
 import { ColumnModal } from "./ColumnModal";
 import type { DefaultModuleDataType, ModuleType } from "@/types/module";
-import DataVisibilityViewModal from "./DataVisibilityViewModal";
+import DataVisibilityViewModal from "./ViewModal";
 import type { PaginationType } from "@/types";
 
 const { Option } = Select;
 
-interface DataVisibilityBuilderProps {
+interface BuilderProps {
   relatedType?: "role" | "user",
   relatedId?: string;
 }
 
-const DataVisibilityBuilder: React.FC<DataVisibilityBuilderProps> = ({ relatedType, relatedId }) => {
+const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const [modules, setModules] = useState<ModuleType[]>([])
   const [pagination, setPagination] = useState<PaginationType>({
     current: 1,
@@ -327,5 +327,5 @@ const DataVisibilityBuilder: React.FC<DataVisibilityBuilderProps> = ({ relatedTy
 };
 
 export {
-  DataVisibilityBuilder
+  Builder
 }

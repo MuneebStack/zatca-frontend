@@ -13,15 +13,15 @@ import { CreateUser } from '@/pages/Users/create';
 import { ViewUser } from '@/pages/Users/show';
 import { EditUser } from '@/pages/Users/edit';
 import { Tokens } from '@/pages/Tokens';
-import { RolePermissions } from '@/pages/Permissions/RolePermissions';
-import { UserPermissions } from '@/pages/Permissions/UserPermissions';
-import { RolesPermissions } from '@/pages/Permissions/RolesPermissions';
-import { UsersPermissions } from '@/pages/Permissions/UsersPermissions';
+import { Roles as RolesPermissions } from '@/pages/Permissions/Roles';
+import { Users as UsersPermissions } from '@/pages/Permissions/Users';
+import { Role as RolePermissions } from '@/pages/Permissions/Role';
+import { User as UserPermissions } from '@/pages/Permissions/User';
 import { Navigations } from '@/pages/Navigations';
-import { RolesDataVisibilities } from '@/pages/DataVisibilities/RolesDataVisibilities';
-import { UsersDataVisibilities } from '@/pages/DataVisibilities/UsersDataVisibilities';
-import { RoleDataVisibilities } from '@/pages/DataVisibilities/RoleDataVisibilities';
-import { UserDataVisibilities } from '@/pages/DataVisibilities/UserDataVisibilities';
+import { Roles as RolesDataAccess } from '@/pages/DataAccess/Roles';
+import { Users as UsersDataAccess } from '@/pages/DataAccess/Users';
+import { Role as RoleDataAccess } from '@/pages/DataAccess/Role';
+import { User as UserDataAccess } from '@/pages/DataAccess/User';
 
 export function AppRoutes() {
   return (
@@ -142,41 +142,41 @@ export function AppRoutes() {
         />
 
         <Route
-          path="/data-visibilities/roles"
+          path="/data-access/roles"
           element={
             <PrivateRoute>
               <AuthLayout>
-                <RolesDataVisibilities />
+                <RolesDataAccess />
               </AuthLayout>
             </PrivateRoute>
           }
         />
         <Route
-          path="/data-visibilities/users"
+          path="/data-access/users"
           element={
             <PrivateRoute>
               <AuthLayout>
-                <UsersDataVisibilities />
+                <UsersDataAccess />
               </AuthLayout>
             </PrivateRoute>
           }
         />
         <Route
-          path="/data-visibilities/roles/:id"
+          path="/data-access/roles/:id"
           element={
             <PrivateRoute>
               <AuthLayout>
-                <RoleDataVisibilities />
+                <RoleDataAccess />
               </AuthLayout>
             </PrivateRoute>
           }
         />
         <Route
-          path="/data-visibilities/users/:id"
+          path="/data-access/users/:id"
           element={
             <PrivateRoute>
               <AuthLayout>
-                <UserDataVisibilities />
+                <UserDataAccess />
               </AuthLayout>
             </PrivateRoute>
           }

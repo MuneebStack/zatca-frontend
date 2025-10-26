@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Card, Flex, Typography } from "antd";
-import { DataVisibilityBuilder } from "./components/DataVisibilityBuilder";
+import { Builder } from "./components/Builder";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
-const RoleDataVisibilities: React.FC = () => {
+const Role: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ const RoleDataVisibilities: React.FC = () => {
         <Card
             title={
                 <Flex justify="space-between" align="center">
-                    <Text>Manage Role - Data Visibilities</Text>
+                    <Text>Manage Role - Data Access</Text>
                     <Button
                         icon={<ArrowLeftOutlined />}
                         onClick={() => navigate(-1)}
@@ -23,11 +23,11 @@ const RoleDataVisibilities: React.FC = () => {
                 </Flex>
             }
         >
-            <DataVisibilityBuilder relatedType="role" relatedId={id!} />
+            <Builder relatedType="role" relatedId={id!} />
         </Card>
     );
 }; 
 
 export {
-    RoleDataVisibilities
+    Role
 }

@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Card, Flex, Typography } from "antd";
-import { PermissionCategories } from "./components/PermissionCategories";
+import { Categories } from "./components/Categories";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
-const UserPermissions: React.FC = () => {
+const User: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -23,11 +23,11 @@ const UserPermissions: React.FC = () => {
                 </Flex>
             }
         >
-            <PermissionCategories relatedType="user" relatedId={id!} />
+            <Categories relatedType="user" relatedId={id!} />
         </Card>
     );
 };
 
 export {
-    UserPermissions
+    User
 } 

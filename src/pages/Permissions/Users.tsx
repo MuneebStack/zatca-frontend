@@ -1,22 +1,22 @@
 import { Flex, Typography } from "antd";
-import { PermissionRoleListTable } from "./components/PermissionRoleListTable";
+import { UserListTable } from "./components/UserListTable";
 
 const { Title } = Typography;
 
-const RolesPermissions: React.FC = () => {
+const Users: React.FC = () => {
     return (
         <Flex vertical gap="middle">
             <Flex justify="space-between" align="center">
                 <Title level={4}>
-                    Roles - Permissions
+                    Users - Permissions
                 </Title>
             </Flex>
 
-            <PermissionRoleListTable />
+            <UserListTable />
         </Flex>
     );
 };
 
 export {
-    RolesPermissions
+    Users
 } 

@@ -1,22 +1,22 @@
 import { Flex, Typography } from "antd";
-import { DataVisibilityRoleListTable } from "./components/DataVisibilityRoleListTable";
+import { RoleListTable } from "./components/RoleListTable";
 
 const { Title } = Typography;
 
-const RolesDataVisibilities: React.FC = () => {
+const Roles: React.FC = () => {
     return (
         <Flex vertical gap="middle">
             <Flex justify="space-between" align="center">
                 <Title level={4}>
-                    Roles - Data Visibilities
+                    Roles - Data Access
                 </Title>
             </Flex>
 
-            <DataVisibilityRoleListTable />
+            <RoleListTable />
         </Flex>
     );
 };
 
 export {
-    RolesDataVisibilities
+    Roles
 } 

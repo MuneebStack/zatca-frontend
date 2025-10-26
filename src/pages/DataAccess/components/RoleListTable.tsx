@@ -7,7 +7,7 @@ import type { PaginationType } from "@/types";
 import { axiosClient } from "@/services/axiosClient";
 import { capitalize } from "@/utils";
 
-const DataVisibilityRoleListTable: React.FC = () => {
+const RoleListTable: React.FC = () => {
     const [roles, setRoles] = useState<RoleType[]>([]);
     const [loading, setLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
@@ -60,7 +60,7 @@ const DataVisibilityRoleListTable: React.FC = () => {
             render: (_, record) => (
                 <Button
                     type="primary"
-                    onClick={() => navigate(`/data-visibilities/roles/${record.id}`)}
+                    onClick={() => navigate(`/data-access/roles/${record.id}`)}
                 >
                     Manage
                 </Button>
@@ -89,5 +89,5 @@ const DataVisibilityRoleListTable: React.FC = () => {
 };
 
 export {
-    DataVisibilityRoleListTable
+    RoleListTable
 }

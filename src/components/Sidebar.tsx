@@ -53,17 +53,17 @@ const Sidebar = () => {
             ],
         },
         {
-            key: "/data-visibilities",
+            key: "/data-access",
             icon: <EyeOutlined />,
-            label: "Data Visibilities",
+            label: "Data Access",
             children: [
                 {
-                    key: "/data-visibilities/roles",
-                    label: <Link to="/data-visibilities/roles">Roles</Link>,
+                    key: "/data-access/roles",
+                    label: <Link to="/data-access/roles">Roles</Link>,
                 },
                 {
-                    key: "/data-visibilities/users",
-                    label: <Link to="/data-visibilities/users">Users</Link>,
+                    key: "/data-access/users",
+                    label: <Link to="/data-access/users">Users</Link>,
                 },
             ],
         },

@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Card, Flex, Typography } from "antd";
-import { DataVisibilityBuilder } from "./components/DataVisibilityBuilder";
+import { Builder } from "./components/Builder";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
-const UserDataVisibilities: React.FC = () => {
+const User: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ const UserDataVisibilities: React.FC = () => {
         <Card
             title={
                 <Flex justify="space-between" align="center">
-                    <Text>Manage User - Data Visibilities</Text>
+                    <Text>Manage User - Data Access</Text>
                     <Button
                         icon={<ArrowLeftOutlined />}
                         onClick={() => navigate(-1)}
@@ -23,11 +23,11 @@ const UserDataVisibilities: React.FC = () => {
                 </Flex>
             }
         >
-            <DataVisibilityBuilder relatedType="user" relatedId={id!} />
+            <Builder relatedType="user" relatedId={id!} />
         </Card>
     );
 };
 
 export {
-    UserDataVisibilities
+    User
 } 

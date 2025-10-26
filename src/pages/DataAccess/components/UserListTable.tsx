@@ -1,13 +1,13 @@
-import { Table, Button, Tag } from "antd";
+import { Table, Button } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
-import type { UserType } from "@/types/user";
 import type { PaginationType } from "@/types";
 import { axiosClient } from "@/services/axiosClient";
 import { capitalize } from "@/utils";
+import type { UserType } from "@/types/user";
 
-const PermissionUserListTable: React.FC = () => {
+const UserListTable: React.FC = () => {
     const [users, setUsers] = useState<UserType[]>([]);
     const [loading, setLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
@@ -22,7 +22,7 @@ const PermissionUserListTable: React.FC = () => {
 
         setLoading(true);
         axiosClient
-            .get("portal/users/permissions", {
+            .get("portal/users/data-visibilities", {
                 params: {
                     page: pagination.current,
                     per_page: pagination.pageSize,
@@ -59,21 +59,12 @@ const PermissionUserListTable: React.FC = () => {
             dataIndex: "email",
         },
         {
-            title: "Total Permissions",
-            dataIndex: "permission_count",
-            render: (_, record) => (
-                <Tag>
-                    {record?.permission_count || 0}
-                </Tag>
-            ),
-        },
-        {
             title: "Action",
             align: "center",
             render: (_, record) => (
                 <Button
                     type="primary"
-                    onClick={() => navigate(`/permissions/users/${record.id}`)}
+                    onClick={() => navigate(`/data-access/users/${record.id}`)}
                 >
                     Manage
                 </Button>
@@ -102,5 +93,5 @@ const PermissionUserListTable: React.FC = () => {
 };
 
 export {
-    PermissionUserListTable
+    UserListTable
 }

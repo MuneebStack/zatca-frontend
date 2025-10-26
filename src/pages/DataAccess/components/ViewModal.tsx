@@ -6,14 +6,14 @@ import type { DefaultModuleDataType } from "@/types/module";
 
 const { Text } = Typography;
 
-interface DataVisibilityViewModalProps {
+interface ViewModalProps {
     isOpen: boolean;
     onClose: () => void;
     visibilityConfig: Record<string, DefaultModuleDataType>;
     setVisibilityConfig: React.Dispatch<React.SetStateAction<Record<string, DefaultModuleDataType>>>;
 }
 
-const DataVisibilityViewModal: React.FC<DataVisibilityViewModalProps> = ({
+const ViewModal: React.FC<ViewModalProps> = ({
     isOpen,
     onClose,
     visibilityConfig,
@@ -173,4 +173,4 @@ const DataVisibilityViewModal: React.FC<DataVisibilityViewModalProps> = ({
     );
 };
 
-export default DataVisibilityViewModal;
+export default ViewModal;
