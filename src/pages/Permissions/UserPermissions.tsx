@@ -5,7 +5,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
-const RolePermissionsPage: React.FC = () => {
+const UserPermissions: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ const RolePermissionsPage: React.FC = () => {
         <Card
             title={
                 <Flex justify="space-between" align="center">
-                    <Text>Manage Role - Permissions</Text>
+                    <Text>Manage User - Permissions</Text>
                     <Button
                         icon={<ArrowLeftOutlined />}
                         onClick={() => navigate(-1)}
@@ -23,11 +23,11 @@ const RolePermissionsPage: React.FC = () => {
                 </Flex>
             }
         >
-            <PermissionCategories relatedType="role" relatedId={id!} />
+            <PermissionCategories relatedType="user" relatedId={id!} />
         </Card>
     );
-}; 
+};
 
 export {
-    RolePermissionsPage
-}
+    UserPermissions
+} 
