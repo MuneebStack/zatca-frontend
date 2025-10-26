@@ -13,11 +13,15 @@ import { CreateUser } from '@/pages/Users/create';
 import { ViewUser } from '@/pages/Users/show';
 import { EditUser } from '@/pages/Users/edit';
 import { Tokens } from '@/pages/Tokens';
-import { RolePermissionsPage } from '@/pages/Permissions/RolePermissionPage';
-import { UserPermissionsPage } from '@/pages/Permissions/UserPermissionPage';
+import { RolePermissions } from '@/pages/Permissions/RolePermissions';
+import { UserPermissions } from '@/pages/Permissions/UserPermissions';
 import { RolesPermissions } from '@/pages/Permissions/RolesPermissions';
 import { UsersPermissions } from '@/pages/Permissions/UsersPermissions';
 import { Navigations } from '@/pages/Navigations';
+import { RolesDataVisibilities } from '@/pages/DataVisibilities/RolesDataVisibilities';
+import { UsersDataVisibilities } from '@/pages/DataVisibilities/UsersDataVisibilities';
+import { RoleDataVisibilities } from '@/pages/DataVisibilities/RoleDataVisibilities';
+import { UserDataVisibilities } from '@/pages/DataVisibilities/UserDataVisibilities';
 
 export function AppRoutes() {
   return (
@@ -121,7 +125,7 @@ export function AppRoutes() {
           element={
             <PrivateRoute>
               <AuthLayout>
-                <RolePermissionsPage />
+                <RolePermissions />
               </AuthLayout>
             </PrivateRoute>
           }
@@ -131,7 +135,48 @@ export function AppRoutes() {
           element={
             <PrivateRoute>
               <AuthLayout>
-                <UserPermissionsPage />
+                <UserPermissions />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/data-visibilities/roles"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <RolesDataVisibilities />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/data-visibilities/users"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <UsersDataVisibilities />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/data-visibilities/roles/:id"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <RoleDataVisibilities />
+              </AuthLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/data-visibilities/users/:id"
+          element={
+            <PrivateRoute>
+              <AuthLayout>
+                <UserDataVisibilities />
               </AuthLayout>
             </PrivateRoute>
           }
