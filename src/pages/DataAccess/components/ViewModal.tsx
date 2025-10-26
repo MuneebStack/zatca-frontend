@@ -9,18 +9,18 @@ const { Text } = Typography;
 interface ViewModalProps {
     isOpen: boolean;
     onClose: () => void;
-    visibilityConfig: Record<string, DefaultModuleDataType>;
-    setVisibilityConfig: React.Dispatch<React.SetStateAction<Record<string, DefaultModuleDataType>>>;
+    accessConfig: Record<string, DefaultModuleDataType>;
+    setAccessConfig: React.Dispatch<React.SetStateAction<Record<string, DefaultModuleDataType>>>;
 }
 
 const ViewModal: React.FC<ViewModalProps> = ({
     isOpen,
     onClose,
-    visibilityConfig,
-    setVisibilityConfig
+    accessConfig,
+    setAccessConfig
 }) => {
     const handleRemoveModule = (moduleKey: string) => {
-        setVisibilityConfig((prev) => {
+        setAccessConfig((prev) => {
             const updated = { ...prev };
             delete updated[moduleKey];
             return updated;
@@ -28,19 +28,17 @@ const ViewModal: React.FC<ViewModalProps> = ({
     };
 
     const handleRemoveColumn = (moduleKey: string, removedColumn: string) => {
-        console.log(removedColumn);
-        setVisibilityConfig((prev) => ({
+        setAccessConfig((prev) => ({
             ...prev,
             [moduleKey]: {
                 ...prev[moduleKey],
                 columns: prev[moduleKey].columns.filter((column: string) => column !== removedColumn),
             },
         }));
-        console.log(visibilityConfig);
     };
 
     const handleRemoveFilterValue = (moduleKey: string, field: string, removedValue: any) => {
-        setVisibilityConfig((prev) => {
+        setAccessConfig((prev) => {
             const updatedFilters = { ...prev[moduleKey].filters };
             const remaining = updatedFilters[field].filter((v: any) => v !== removedValue);
             if (remaining.length > 0) {
@@ -60,7 +58,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
     };
 
     const handleRemoveId = (moduleKey: string, removeId: React.Key) => {
-        setVisibilityConfig((prev) => ({
+        setAccessConfig((prev) => ({
             ...prev,
             [moduleKey]: {
                 ...prev[moduleKey],
@@ -69,14 +67,14 @@ const ViewModal: React.FC<ViewModalProps> = ({
         }));
     };
 
-    const items = Object.entries(visibilityConfig).map(([moduleKey, moduleData]) => ({
+    const items = Object.entries(accessConfig).map(([moduleKey, moduleData]) => ({
         key: moduleKey,
         label: (capitalize(moduleKey, /_-/)),
         children: (
             <>
                 <Row justify="end" style={{ marginBottom: 8 }}>
                     <Popconfirm
-                        title="Are you sure you want to remove the visibility?"
+                        title="Are you sure you want to remove the access?"
                         okText="Yes"
                         cancelText="No"
                         onConfirm={() => handleRemoveModule(moduleKey)}
@@ -154,14 +152,14 @@ const ViewModal: React.FC<ViewModalProps> = ({
 
     return (
         <Modal
-            title="Data Visibility"
+            title="Data Access"
             open={isOpen}
             onCancel={onClose}
             footer={null}
             width={700}
         >
-            {Object.keys(visibilityConfig).length === 0 ? (
-                <Empty description="No visibility rules added yet." />
+            {Object.keys(accessConfig).length === 0 ? (
+                <Empty description="No access rules added yet." />
             ) : (
                 <Collapse
                     accordion
@@ -173,4 +171,6 @@ const ViewModal: React.FC<ViewModalProps> = ({
     );
 };
 
-export default ViewModal;
+export {
+    ViewModal
+}

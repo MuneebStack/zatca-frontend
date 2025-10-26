@@ -3,7 +3,7 @@ import { Button, Select, Table, Form, Input, Row, Col, Divider, Space, message, 
 import type { ColumnsType } from "antd/es/table";
 import { ColumnModal } from "./ColumnModal";
 import type { DefaultModuleDataType, ModuleType } from "@/types/module";
-import DataVisibilityViewModal from "./ViewModal";
+import { ViewModal } from "./ViewModal";
 import type { PaginationType } from "@/types";
 
 const { Option } = Select;
@@ -25,7 +25,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [visibilityConfig, setVisibilityConfig] = useState<Record<string, DefaultModuleDataType>>({});
+  const [accessConfig, setAccessConfig] = useState<Record<string, DefaultModuleDataType>>({});
 
   const defaultModuleData: DefaultModuleDataType = {
     columns: [],
@@ -34,10 +34,10 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   }
   const currentModule = modules.find((module) => module.name === selectedModule);
 
-  const handleAddToVisibility = () => {
+  const handleAddAccess = () => {
     if (!selectedModule) return;
 
-    const moduleData = visibilityConfig[selectedModule] || defaultModuleData;
+    const moduleData = accessConfig[selectedModule] || defaultModuleData;
     const currentFilters = Object.keys(selectedFilters).length > 0 ? { ...selectedFilters } : null;
 
     const existingFilters = moduleData.filters || {};
@@ -57,7 +57,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       }
     }
 
-    setVisibilityConfig((prev) => ({
+    setAccessConfig((prev) => ({
       ...prev,
       [selectedModule]: {
         ...moduleData,
@@ -69,10 +69,10 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const handleAddRows = () => {
     if (!selectedModule || selectedRowKeys.length === 0) return;
 
-    const moduleData = visibilityConfig[selectedModule] || defaultModuleData;
+    const moduleData = accessConfig[selectedModule] || defaultModuleData;
     const updatedIds = Array.from(new Set([...moduleData.ids, ...selectedRowKeys]));
 
-    setVisibilityConfig((prev) => ({
+    setAccessConfig((prev) => ({
       ...prev,
       [selectedModule]: {
         ...moduleData,
@@ -86,9 +86,9 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const handleSaveColumns = (columns: string[]) => {
     if (!selectedModule) return;
 
-    const moduleData = visibilityConfig[selectedModule] || defaultModuleData;
+    const moduleData = accessConfig[selectedModule] || defaultModuleData;
 
-    setVisibilityConfig((prev) => ({
+    setAccessConfig((prev) => ({
       ...prev,
       [selectedModule]: {
         ...moduleData,
@@ -97,7 +97,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     }));
   };
 
-  const handleSaveVisibility = () => {
+  const handleSave = () => {
     message.success("Structure saved!");
   }
 
@@ -158,7 +158,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     ];
     setModules(mockModules);
 
-    // const mockVisibilityConfig = {
+    // const mockaccessConfig = {
     //   users: {
     //     columns: [],
     //     filters: {},
@@ -170,7 +170,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     //     ids: []
     //   }
     // };
-    // setVisibilityConfig(mockVisibilityConfig);
+    // setAccessConfig(mockaccessConfig);
   }, []);
 
   const columns: ColumnsType<any> =
@@ -207,7 +207,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               <Button onClick={() => setIsViewModalOpen(true)}>
                 View
               </Button>
-              <Button type="primary" onClick={handleSaveVisibility}>
+              <Button type="primary" onClick={handleSave}>
                 Save
               </Button>
             </Space>
@@ -274,8 +274,8 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
             {selectedRowKeys.length > 0 && (
               <Button onClick={handleAddRows}>Add Rows</Button>
             )}
-            <Button onClick={handleAddToVisibility}>
-              Add to Visibility
+            <Button onClick={handleAddAccess}>
+              Add To Acccess
             </Button>
           </Flex>
         )}
@@ -312,15 +312,15 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
           onClose={() => setIsColumnModalOpen(false)}
           onSave={(columns) => handleSaveColumns(columns)}
           currentModule={currentModule}
-          visibilityConfig={visibilityConfig}
+          accessConfig={accessConfig}
         />
       }
 
-      <DataVisibilityViewModal
+      <ViewModal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
-        visibilityConfig={visibilityConfig}
-        setVisibilityConfig={setVisibilityConfig}
+        accessConfig={accessConfig}
+        setAccessConfig={setAccessConfig}
       />
     </>
   );

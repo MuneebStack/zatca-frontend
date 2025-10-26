@@ -7,7 +7,7 @@ interface ColumnModalProps {
     onClose: () => void;
     onSave: (columns: string[]) => void;
     currentModule: ModuleType;
-    visibilityConfig: Record<string, DefaultModuleDataType>;
+    accessConfig: Record<string, DefaultModuleDataType>;
 }
 
 const ColumnModal: React.FC<ColumnModalProps> = ({
@@ -15,18 +15,18 @@ const ColumnModal: React.FC<ColumnModalProps> = ({
     onClose,
     onSave,
     currentModule,
-    visibilityConfig,
+    accessConfig,
 }) => {
     const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
     useEffect(() => {
         if (currentModule) {
-            const moduleConfig = visibilityConfig[currentModule.name];
+            const moduleConfig = accessConfig[currentModule.name];
             setSelectedColumns(moduleConfig?.columns || []);
         } else {
             setSelectedColumns([]);
         }
-    }, [currentModule, visibilityConfig, isOpen]);
+    }, [currentModule, accessConfig, isOpen]);
 
     const handleSave = () => {
         onSave(selectedColumns);
