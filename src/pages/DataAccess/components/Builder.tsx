@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Select, Table, Form, Input, Row, Col, Divider, Space, message, Flex } from "antd";
+import { Button, Select, Table, Form, Input, Row, Col, Divider, Space, Flex } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { ColumnModal } from "./ColumnModal";
 import type { DefaultModuleDataType, ModuleType } from "@/types/module";
 import { ViewModal } from "./ViewModal";
 import type { PaginationType } from "@/types";
+import { axiosClient } from "@/services/axiosClient";
+import { useAuth } from "@/providers/AuthContext";
+import { formatDate } from "@/utils/dateFormatter";
+import { successMessageHandler } from "@/utils/notificationHandler";
 
 const { Option } = Select;
 
@@ -12,47 +16,50 @@ interface BuilderProps {
   relatedType?: "role" | "user",
   relatedId?: string;
 }
+type AccessConfigType = Record<string, DefaultModuleDataType>;
 
 const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
-  const [modules, setModules] = useState<ModuleType[]>([])
+  const { modules } = useAuth();
+  const [currentModule, setCurrentModule] = useState<ModuleType>();
   const [pagination, setPagination] = useState<PaginationType>({
     current: 1,
     pageSize: 10,
     total: 0,
   });
   const [selectedModule, setSelectedModule] = useState<string>();
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({});
+  const [selectedConditions, setSelectedConditions] = useState<Record<string, any>>({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [accessConfig, setAccessConfig] = useState<Record<string, DefaultModuleDataType>>({});
+  const [accessConfig, setAccessConfig] = useState<AccessConfigType>({});
+  const [loading, setLoading] = useState(false);
+  const [viewLoading, setViewLoading] = useState(true);
 
   const defaultModuleData: DefaultModuleDataType = {
     columns: [],
-    filters: {},
-    ids: []
+    conditions: {},
+    module_ids: []
   }
-  const currentModule = modules.find((module) => module.name === selectedModule);
 
-  const handleAddAccess = () => {
+  const onAddAccess = () => {
     if (!selectedModule) return;
 
     const moduleData = accessConfig[selectedModule] || defaultModuleData;
-    const currentFilters = Object.keys(selectedFilters).length > 0 ? { ...selectedFilters } : null;
+    const currentConditions = Object.keys(selectedConditions).length > 0 ? { ...selectedConditions } : null;
 
-    const existingFilters = moduleData.filters || {};
-    const mergedFilters: Record<string, any> = { ...existingFilters };
+    const existingConditions = moduleData.conditions || {};
+    const mergedConditions: Record<string, any> = { ...existingConditions };
 
-    if (currentFilters) {
-      for (const [key, value] of Object.entries(currentFilters)) {
-        const prevValue = mergedFilters[key];
+    if (currentConditions) {
+      for (const [key, value] of Object.entries(currentConditions)) {
+        const prevValue = mergedConditions[key];
 
         if (Array.isArray(prevValue)) {
-          mergedFilters[key] = Array.from(
+          mergedConditions[key] = Array.from(
             new Set([...prevValue, ...(Array.isArray(value) ? value : [value])])
           );
         } else if (value) {
-          mergedFilters[key] = Array.isArray(value) ? value : [value];
+          mergedConditions[key] = Array.isArray(value) ? value : [value];
         }
       }
     }
@@ -61,29 +68,29 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       ...prev,
       [selectedModule]: {
         ...moduleData,
-        filters: mergedFilters
+        conditions: mergedConditions
       }
     }));
   };
 
-  const handleAddRows = () => {
+  const onAddRows = () => {
     if (!selectedModule || selectedRowKeys.length === 0) return;
 
     const moduleData = accessConfig[selectedModule] || defaultModuleData;
-    const updatedIds = Array.from(new Set([...moduleData.ids, ...selectedRowKeys]));
+    const updatedIds = Array.from(new Set([...moduleData.module_ids, ...selectedRowKeys]));
 
     setAccessConfig((prev) => ({
       ...prev,
       [selectedModule]: {
         ...moduleData,
-        ids: updatedIds
+        module_ids: updatedIds
       },
     }));
 
     setSelectedRowKeys([]);
   };
 
-  const handleSaveColumns = (columns: string[]) => {
+  const onSaveColumns = (columns: string[]) => {
     if (!selectedModule) return;
 
     const moduleData = accessConfig[selectedModule] || defaultModuleData;
@@ -97,81 +104,111 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     }));
   };
 
-  const handleSave = () => {
-    message.success("Structure saved!");
-  }
+  const onSave = () => {
+    setLoading(true);
+    axiosClient
+      .post(`portal/data-access/sync`, {
+        related_type: relatedType,
+        related_id: relatedId,
+        access_config: accessConfig,
+      })
+      .then(({ data: responseData }) => {
+        successMessageHandler(responseData);
+      })
+      .catch(error => (error))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    console.log(relatedType, relatedId);
-    const mockModules = [
-      {
-        name: "Users",
-        conditions: [
-          {
-            label: "Role",
-            type: "select",
-            options: ["Admin", "Manager", "User"],
-          },
-          {
-            label: "Status",
-            type: "select",
-            options: ["Active", "Inactive"],
-          },
-          {
-            label: "Department",
-            type: "text",
-            placeholder: "Enter department name",
-          }
-        ],
-        columns: ["id", "name", "email", "role", "status", "department"],
-        rows: [
-          { id: 1, name: "Muneeb", role: "Admin", status: "Active", department: "IT" },
-          { id: 2, name: "Ali", role: "User", status: "Inactive", department: "HR" },
-          { id: 3, name: "Sara", role: "Manager", status: "Active", department: "Finance" },
-        ],
-      },
-      {
-        name: "Invoices",
-        conditions: [
-          {
-            label: "Status",
-            type: "select",
-            options: ["Paid", "Pending", "Overdue"],
-          },
-          {
-            label: "Min Amount",
-            type: "number",
-            placeholder: "Enter minimum amount",
-          },
-          {
-            label: "Max Amount",
-            type: "number",
-            placeholder: "Enter maximum amount",
-          },
-        ],
-        columns: ["id", "customer", "status", "amount"],
-        rows: [
-          { id: 10, customer: "Company A", status: "Paid", amount: 1200 },
-          { id: 11, customer: "Company B", status: "Pending", amount: 800 },
-        ],
-      },
-    ];
-    setModules(mockModules);
+    const controller = new AbortController();
 
-    // const mockaccessConfig = {
-    //   users: {
-    //     columns: [],
-    //     filters: {},
-    //     ids: []
-    //   },
-    //   invoices: {
-    //     columns: [],
-    //     filters: {},
-    //     ids: []
-    //   }
-    // };
-    // setAccessConfig(mockaccessConfig);
-  }, []);
+    axiosClient
+      .get(`portal/data-access/${relatedType}s/${relatedId}`, {
+        signal: controller.signal,
+      })
+      .then(({ data: responseData }) => {
+        if (responseData?.data) {
+          const payload = responseData.data;
+
+          const transformed: AccessConfigType = payload.data.reduce(function (
+            acc: AccessConfigType, item: Record<string, any>
+          ) {
+            const moduleKey = item.module;
+            if (moduleKey) {
+              acc[moduleKey] = {
+                columns: item.columns ?? [],
+                conditions: item.conditions ?? {},
+                module_ids: item.module_ids ?? []
+              };
+
+              return acc;
+            }
+          }, {})
+          setAccessConfig(transformed);
+        }
+      })
+      .catch(() => { })
+      .finally(() => setViewLoading(false));
+
+    return () => controller.abort();
+  }, [relatedType, relatedId]);
+
+  useEffect(() => {
+    if (!selectedModule) return;
+
+    const controller = new AbortController();
+
+    setLoading(true);
+    axiosClient
+      .get("portal/data-access/module", {
+        params: {
+          page: pagination.current,
+          per_page: pagination.pageSize,
+          module: selectedModule
+        },
+        signal: controller.signal
+      })
+      .then(({ data: responseData }) => {
+        if (responseData?.data) {
+          const payload = responseData.data;
+          setCurrentModule(payload);
+        }
+      })
+      .catch((error) => (error))
+      .finally(() => setLoading(false))
+
+    return () => controller.abort();
+  }, [selectedModule, pagination.current, pagination.pageSize]);
+
+  useEffect(() => {
+    if (currentModule) {
+      setPagination((prev) => ({
+        ...prev,
+        total: currentModule.rows.meta.total,
+        current: currentModule.rows.meta.current_page,
+        pageSize: currentModule.rows.meta.per_page,
+      }));
+    }
+  }, [currentModule])
+
+  const preprocessTableData = (rows: ModuleType['rows']['data']) => {
+    return rows.map((row) => {
+      const newRow: Record<string, any> = {};
+
+      Object.entries(row).forEach(([key, value]) => {
+        if (
+          typeof value === "string" &&
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)
+        ) {
+          newRow[key] = formatDate(value);
+        } else {
+          newRow[key] = value;
+        }
+      });
+
+      return newRow;
+    });
+  };
 
   const columns: ColumnsType<any> =
     currentModule?.columns.map((col) => ({
@@ -190,13 +227,13 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               className="w-full"
               onChange={(value) => {
                 setSelectedModule(value);
-                setSelectedFilters({});
+                setSelectedConditions({});
                 setSelectedRowKeys([]);
               }}
               value={selectedModule}
             >
-              {modules.map((module, index) => (
-                <Option key={index} value={module.name}>
+              {modules.map((module) => (
+                <Option key={module.key} value={module.key}>
                   {module.name}
                 </Option>
               ))}
@@ -204,10 +241,10 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
           </Col>
           <Col>
             <Space>
-              <Button onClick={() => setIsViewModalOpen(true)}>
+              <Button onClick={() => setIsViewModalOpen(true)} disabled={viewLoading}>
                 View
               </Button>
-              <Button type="primary" onClick={handleSave}>
+              <Button type="primary" onClick={onSave} disabled={!currentModule || loading}>
                 Save
               </Button>
             </Space>
@@ -221,13 +258,14 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
                   mode="multiple"
                   placeholder={`Select ${condition.label}`}
                   className="w-full min-w-40"
-                  value={selectedFilters[condition.label] || []}
+                  value={selectedConditions[condition.key] || []}
                   onChange={(value) =>
-                    setSelectedFilters((prev) => ({
+                    setSelectedConditions((prev) => ({
                       ...prev,
-                      [condition.label]: value,
+                      [condition.key]: value,
                     }))
                   }
+                  disabled={loading}
                   allowClear
                 >
                   {condition.options?.map((option) => (
@@ -239,28 +277,30 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               ) : condition.type === "number" ? (
                 <Input
                   type="number"
-                  value={selectedFilters[condition.label] || ""}
+                  value={selectedConditions[condition.key] || ""}
                   className="w-full"
                   onChange={(e) =>
-                    setSelectedFilters((prev) => ({
+                    setSelectedConditions((prev) => ({
                       ...prev,
-                      [condition.label]: e.target.value,
+                      [condition.key]: e.target.value,
                     }))
                   }
                   placeholder={condition.placeholder || `Enter ${condition.label}`}
+                  disabled={loading}
                 />
               ) : (
                 <Input
                   type="text"
-                  value={selectedFilters[condition.label] || ""}
+                  value={selectedConditions[condition.key] || ""}
                   className="w-full"
                   onChange={(e) =>
-                    setSelectedFilters((prev) => ({
+                    setSelectedConditions((prev) => ({
                       ...prev,
-                      [condition.label]: e.target.value,
+                      [condition.key]: e.target.value
                     }))
                   }
                   placeholder={condition.placeholder || `Enter ${condition.label}`}
+                  disabled={loading}
                 />
               )}
             </Form.Item>
@@ -268,13 +308,13 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
         </Space>
         {selectedModule && (
           <Flex justify="end" gap={8} wrap>
-            <Button onClick={() => setIsColumnModalOpen(true)}>
+            <Button onClick={() => setIsColumnModalOpen(true)} disabled={!currentModule || loading}>
               Select Columns
             </Button>
             {selectedRowKeys.length > 0 && (
-              <Button onClick={handleAddRows}>Add Rows</Button>
+              <Button onClick={onAddRows}>Add Rows</Button>
             )}
-            <Button onClick={handleAddAccess}>
+            <Button onClick={onAddAccess} disabled={!currentModule || loading}>
               Add To Acccess
             </Button>
           </Flex>
@@ -286,8 +326,9 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       {selectedModule && (
         <Table
           rowKey="id"
-          dataSource={currentModule?.rows || []}
+          dataSource={preprocessTableData(currentModule?.rows?.data || [])}
           columns={columns}
+          loading={loading}
           rowSelection={{
             selectedRowKeys,
             onChange: (keys: React.Key[]) => setSelectedRowKeys(keys),
@@ -310,7 +351,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
         <ColumnModal
           isOpen={isColumnModalOpen}
           onClose={() => setIsColumnModalOpen(false)}
-          onSave={(columns) => handleSaveColumns(columns)}
+          onSave={(columns) => onSaveColumns(columns)}
           currentModule={currentModule}
           accessConfig={accessConfig}
         />

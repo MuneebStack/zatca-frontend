@@ -4,12 +4,15 @@ import { frontendErrorHandler } from "@/utils/notificationHandler";
 import { FullPageLoader } from "@/components/FullPageLoader";
 import { axiosClient } from "@/services/axiosClient";
 import type { UserType } from "@/types/user";
+import type { ModuleType } from "@/types/module";
 
-type configType = Record<string, any>;
+type ConfigType = Record<string, any>;
+type ShortModuleType = Pick<ModuleType, "key" | "name">[];
 
 interface AuthContextType {
     user?: UserType;
-    configs: configType;
+    configs: ConfigType;
+    modules: ShortModuleType
     isAuthenticated: boolean;
     login: (token: string, expiresAt: string) => void;
     logout: (showMessage?: boolean) => void;
@@ -23,7 +26,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({ children }: AuthProviderType) => {
     const [user, setUser] = useState<UserType>();
-    const [configs, setConfigs] = useState<configType>({});
+    const [configs, setConfigs] = useState<ConfigType>({});
+    const [modules, setModules] = useState<ShortModuleType>([])
     const [loading, setLoading] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
@@ -43,6 +47,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
     const logout = (showMessage: boolean = false) => {
         setUser(undefined);
         setConfigs([]);
+        setModules([]);
 
         localStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -79,11 +84,13 @@ const AuthProvider = ({ children }: AuthProviderType) => {
         const controller = new AbortController();
         axiosClient
             .get("auth/session", { signal: controller.signal })
-            .then((response) => {
-                if (response?.data?.data) {
-                    const { user, configs } = response.data.data;
+            .then(({ data: responseData}) => {
+                if (responseData?.data) {
+                    const payload = responseData.data;
+                    const { user, configs, modules } = payload;
                     setUser(user);
                     setConfigs(configs);
+                    setModules(modules);
                 }
             })
             .catch((error) => (error))
@@ -105,7 +112,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
     }, [isGuestRoute])
 
     return (
-        <AuthContext.Provider value={{ user, configs, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ user, configs, modules, isAuthenticated, login, logout }}>
             {loading ? <FullPageLoader /> : children}
         </AuthContext.Provider>
     );

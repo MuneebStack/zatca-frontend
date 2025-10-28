@@ -22,7 +22,7 @@ const RoleListTable: React.FC = () => {
 
         setLoading(true);
         axiosClient
-            .get("portal/roles/data-visibilities", {
+            .get("portal/roles/data-access", {
                 params: {
                     page: pagination.current,
                     per_page: pagination.pageSize,

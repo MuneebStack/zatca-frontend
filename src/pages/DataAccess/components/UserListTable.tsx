@@ -22,7 +22,7 @@ const UserListTable: React.FC = () => {
 
         setLoading(true);
         axiosClient
-            .get("portal/users/data-visibilities", {
+            .get("portal/users/data-access", {
                 params: {
                     page: pagination.current,
                     per_page: pagination.pageSize,

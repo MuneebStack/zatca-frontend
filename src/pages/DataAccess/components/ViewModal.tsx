@@ -37,21 +37,21 @@ const ViewModal: React.FC<ViewModalProps> = ({
         }));
     };
 
-    const handleRemoveFilterValue = (moduleKey: string, field: string, removedValue: any) => {
+    const handleRemoveConditionValue = (moduleKey: string, field: string, removedValue: string | number) => {
         setAccessConfig((prev) => {
-            const updatedFilters = { ...prev[moduleKey].filters };
-            const remaining = updatedFilters[field].filter((v: any) => v !== removedValue);
+            const updatedConditions = { ...prev[moduleKey].conditions };
+            const remaining = updatedConditions[field].filter((value) => value !== removedValue);
             if (remaining.length > 0) {
-                updatedFilters[field] = remaining;
+                updatedConditions[field] = remaining;
             } else {
-                delete updatedFilters[field];
+                delete updatedConditions[field];
             }
 
             return {
                 ...prev,
                 [moduleKey]: {
                     ...prev[moduleKey],
-                    filters: updatedFilters,
+                    conditions: updatedConditions,
                 },
             };
         });
@@ -62,7 +62,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
             ...prev,
             [moduleKey]: {
                 ...prev[moduleKey],
-                ids: prev[moduleKey].ids.filter((id) => id !== removeId)
+                module_ids: prev[moduleKey].module_ids.filter((moduleId) => moduleId !== removeId)
             },
         }));
     };
@@ -107,15 +107,15 @@ const ViewModal: React.FC<ViewModalProps> = ({
                         <Space direction="vertical" wrap>
                             <Text strong>Conditions</Text>
                             <Space direction="vertical" size={[8, 8]} className="ms-3">
-                                {Object.keys(moduleData.filters || {}).length > 0 ? (
-                                    Object.entries(moduleData.filters).map(([field, values]) => (
+                                {Object.keys(moduleData.conditions || {}).length > 0 ? (
+                                    Object.entries(moduleData.conditions).map(([field, values]) => (
                                         <Space wrap size={[4, 4]} key={field}>
                                             <Text>{field}:</Text>
                                             {values.map((value: any, index: number) => (
                                                 <Tag
                                                     key={`${field}-${value}-${index}`}
                                                     closable
-                                                    onClose={() => handleRemoveFilterValue(moduleKey, field, value)}
+                                                    onClose={() => handleRemoveConditionValue(moduleKey, field, value)}
                                                 >
                                                     {String(value)}
                                                 </Tag>
@@ -133,10 +133,10 @@ const ViewModal: React.FC<ViewModalProps> = ({
                         <Space direction="vertical" wrap>
                             <Text strong>Custom IDs</Text>
                             <Space wrap size={[4, 4]} className="ms-3">
-                                {moduleData.ids?.length ? (
-                                    moduleData.ids.map((id: any) => (
-                                        <Tag key={id} closable onClose={() => handleRemoveId(moduleKey, id)}>
-                                            {id}
+                                {moduleData.module_ids?.length ? (
+                                    moduleData.module_ids.map((moduleId) => (
+                                        <Tag key={moduleId} closable onClose={() => handleRemoveId(moduleKey, moduleId)}>
+                                            {moduleId}
                                         </Tag>
                                     ))
                                 ) : (

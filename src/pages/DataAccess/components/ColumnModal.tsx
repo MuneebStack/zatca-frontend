@@ -15,13 +15,13 @@ const ColumnModal: React.FC<ColumnModalProps> = ({
     onClose,
     onSave,
     currentModule,
-    accessConfig,
+    accessConfig
 }) => {
     const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
     useEffect(() => {
         if (currentModule) {
-            const moduleConfig = accessConfig[currentModule.name];
+            const moduleConfig = accessConfig[currentModule.key];
             setSelectedColumns(moduleConfig?.columns || []);
         } else {
             setSelectedColumns([]);
