@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Checkbox, Space } from "antd";
-import type { DefaultModuleDataType, ModuleType } from "@/types/module";
+import type { ModuleDataType, ModuleType } from "@/types/module";
 
 interface ColumnModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (columns: string[]) => void;
     currentModule: ModuleType;
-    accessConfig: Record<string, DefaultModuleDataType>;
+    accessConfig: Record<string, ModuleDataType>;
 }
 
 const ColumnModal: React.FC<ColumnModalProps> = ({

@@ -8,7 +8,7 @@ import type { PaginationType } from "@/types";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import { CreateToken } from "./create";
 import { ViewToken } from "./view";
-import { formatDate } from "@/utils/dateFormatter";
+import { formatDate } from "@/utils/date";
 
 const { Title } = Typography;
 

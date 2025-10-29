@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Collapse, Row, Col, Empty, Space, Tag, Popconfirm, Divider, Typography, Button } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
-import { capitalize, dataTransformer } from "@/utils";
+import { capitalize } from "@/utils";
 import type { ModuleDataType } from "@/types/module";
 
 const { Text } = Typography;
@@ -117,7 +117,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
                                                     closable
                                                     onClose={() => handleRemoveConditionValue(moduleKey, field, value)}
                                                 >
-                                                    {dataTransformer(value)}
+                                                    {String(value)}
                                                 </Tag>
                                             ))}
                                         </Space>

@@ -4,7 +4,6 @@ import { axiosClient } from "@/services/axiosClient";
 import { useEffect, useState } from "react";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import { useNavigate, useParams } from "react-router-dom";
-import { cleanPayload } from "@/utils";
 
 interface FormDataType {
     name: string,
@@ -22,8 +21,11 @@ const EditUser = () => {
     const onFinish = (values: any) => {
         if (params?.id) {
             setLoading(true);
+                        
+            !values.password && delete values.password;
+
             axiosClient
-                .put(`portal/users/${params.id}`, cleanPayload(values))
+                .put(`portal/users/${params.id}`, values)
                 .then(({ data: responseData }) => {
                     if (responseData?.data) {
                         successMessageHandler(responseData);

@@ -1,6 +1,8 @@
 import React from "react";
 import { Input, Select, DatePicker, Form } from "antd";
 import type { FieldType } from "@/types";
+import { formatDate } from "@/utils/date";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -56,8 +58,11 @@ const DynamicField: React.FC<DynamicFieldProps> = ({
                 return (
                     <DatePicker
                         className="w-full"
-                        value={value}
-                        onChange={onChange}
+                        value={value ? dayjs(value) : undefined}
+                        onChange={(date) => {
+                            const formattedDate = formatDate(date);
+                            formattedDate && onChange(formattedDate);
+                        }}
                         disabled={loading}
                         placeholder={field.placeholder || `Select ${field.name}`}
                     />

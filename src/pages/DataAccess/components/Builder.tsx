@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button, Select, Table, Row, Col, Divider, Space, Flex } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import { ColumnModal } from "./ColumnModal";
 import type { ModuleDataType, ModuleType } from "@/types/module";
 import { ViewModal } from "./ViewModal";
@@ -9,7 +8,10 @@ import { axiosClient } from "@/services/axiosClient";
 import { useAuth } from "@/providers/AuthContext";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import { DynamicField } from "@/components/DynamicField";
-import { preprocessData } from "@/utils";
+import { formatDate, toUtcString } from "@/utils/date";
+import dayjs from "dayjs";
+import type { ColumnsType } from "antd/es/table";
+import { capitalize } from "@/utils";
 
 const { Option } = Select;
 
@@ -29,7 +31,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   });
   const [selectedModule, setSelectedModule] = useState<string>();
   const [selectedConditions, setSelectedConditions] = useState<Record<string, any>>({});
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [moduleIds, setModuleIds] = useState<React.Key[]>([]);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [accessConfig, setAccessConfig] = useState<AccessConfigType>({});
@@ -42,10 +44,28 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     module_ids: []
   }
 
+  const getModuleData = (moduleKey: string) => accessConfig[moduleKey] || defaultModuleData;
+
+  const transformCondition = (conditions : ModuleDataType["conditions"], inBound: boolean) => {
+    if (!conditions) return {};
+
+    const updatedConditions = JSON.parse(JSON.stringify(conditions));
+    for (const [field, values] of Object.entries(conditions)) {
+      updatedConditions[field] = values.map((value) => {
+        if (typeof value === "string" && dayjs(value).isValid()) {
+          return inBound ? formatDate(value) : toUtcString(value);
+        }
+        return value;
+      });
+    }
+
+    return updatedConditions;
+  }
+
   const onAddAccess = () => {
     if (!selectedModule) return;
 
-    const moduleData = accessConfig[selectedModule] || defaultModuleData;
+    const moduleData = getModuleData(selectedModule);
     const currentConditions = Object.keys(selectedConditions).length > 0 ? { ...selectedConditions } : null;
 
     const existingConditions = moduleData.conditions || {};
@@ -75,10 +95,10 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   };
 
   const onAddRows = () => {
-    if (!selectedModule || selectedRowKeys.length === 0) return;
+    if (!selectedModule || moduleIds.length === 0) return;
 
-    const moduleData = accessConfig[selectedModule] || defaultModuleData;
-    const updatedIds = Array.from(new Set([...moduleData.module_ids, ...selectedRowKeys]));
+    const moduleData = getModuleData(selectedModule);
+    const updatedIds = Array.from(new Set([...moduleData.module_ids, ...moduleIds]));
 
     setAccessConfig((prev) => ({
       ...prev,
@@ -88,13 +108,13 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       },
     }));
 
-    setSelectedRowKeys([]);
+    setModuleIds([]);
   };
 
-  const onSaveColumns = (columns: string[]) => {
+  const onAddColumns = (columns: string[]) => {
     if (!selectedModule) return;
 
-    const moduleData = accessConfig[selectedModule] || defaultModuleData;
+    const moduleData = getModuleData(selectedModule);
 
     setAccessConfig((prev) => ({
       ...prev,
@@ -107,11 +127,17 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
 
   const onSave = () => {
     setLoading(true);
+
+    const accessConfigPayload: AccessConfigType = JSON.parse(JSON.stringify(accessConfig));
+    for (const moduleData of Object.values(accessConfigPayload)) {
+      moduleData.conditions = transformCondition(moduleData.conditions, false);
+    }
+
     axiosClient
       .post(`portal/data-access/sync`, {
         related_type: relatedType,
         related_id: relatedId,
-        access_config: accessConfig,
+        access_config: accessConfigPayload,
       })
       .then(({ data: responseData }) => {
         successMessageHandler(responseData);
@@ -138,7 +164,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
             if (moduleKey) {
               acc[moduleKey] = {
                 columns: item.columns ?? [],
-                conditions: item.conditions ?? {},
+                conditions: transformCondition(item.conditions, true),
                 module_ids: item.module_ids ?? []
               };
 
@@ -192,9 +218,21 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     }
   }, [currentModule])
 
-  const columns: ColumnsType<any> =
+  const formatTableData = (rows: ModuleType["rows"]["data"]) => {
+    rows.forEach((row: Record<string, any>) => {
+      for (const [key, value] of Object.entries(row)) {
+        if (typeof value === 'string' && dayjs(value).isValid()) {
+          row[key] = formatDate(value);
+        }
+      }
+    })
+
+    return rows;
+  }
+
+  const columns: ColumnsType<Record<string, any>> =
     currentModule?.columns.map((column) => ({
-      title: column,
+      title: capitalize(column, /_/),
       dataIndex: column,
       key: column
     })) || [];
@@ -210,7 +248,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               onChange={(value) => {
                 setSelectedModule(value);
                 setSelectedConditions({});
-                setSelectedRowKeys([]);
+                setModuleIds([]);
               }}
               value={selectedModule}
             >
@@ -226,7 +264,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               <Button onClick={() => setIsViewModalOpen(true)} disabled={viewLoading}>
                 View
               </Button>
-              <Button type="primary" onClick={onSave} disabled={!currentModule || loading}>
+              <Button type="primary" onClick={onSave} disabled={loading}>
                 Save
               </Button>
             </Space>
@@ -239,12 +277,12 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               field={condition}
               value={selectedConditions[condition.key]}
               loading={loading}
-              onChange={(value) =>
+              onChange={(value) => {
                 setSelectedConditions((prev) => ({
                   ...prev,
                   [condition.key]: value,
                 }))
-              }
+              }}
               classname="!mb-0"
             />
           ))}
@@ -254,7 +292,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
             <Button onClick={() => setIsColumnModalOpen(true)} disabled={!currentModule || loading}>
               Select Columns
             </Button>
-            {selectedRowKeys.length > 0 && (
+            {moduleIds.length > 0 && (
               <Button onClick={onAddRows}>Add Rows</Button>
             )}
             <Button onClick={onAddAccess} disabled={!currentModule || loading}>
@@ -269,12 +307,12 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       {selectedModule && (
         <Table
           rowKey="id"
-          dataSource={preprocessData(currentModule?.rows?.data || [])}
+          dataSource={formatTableData(currentModule?.rows?.data || [])}
           columns={columns}
           loading={loading}
           rowSelection={{
-            selectedRowKeys,
-            onChange: (keys: React.Key[]) => setSelectedRowKeys(keys),
+            selectedRowKeys: moduleIds,
+            onChange: (keys: React.Key[]) => setModuleIds(keys)
           }}
           pagination={{
             current: pagination.current,
@@ -289,16 +327,15 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
         />
       )}
 
-      {
-        currentModule &&
+      {currentModule && (
         <ColumnModal
           isOpen={isColumnModalOpen}
           onClose={() => setIsColumnModalOpen(false)}
-          onSave={(columns) => onSaveColumns(columns)}
+          onSave={(columns) => onAddColumns(columns)}
           currentModule={currentModule}
           accessConfig={accessConfig}
         />
-      }
+      )}
 
       <ViewModal
         isOpen={isViewModalOpen}

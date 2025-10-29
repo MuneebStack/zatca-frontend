@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { axiosClient } from "@/services/axiosClient";
 import type { UserType } from "@/types/user";
-import { formatDate } from "@/utils/dateFormatter";
+import { formatDate } from "@/utils/date";
 
 const { Text } = Typography;
 
