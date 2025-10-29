@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Select, Table, Form, Input, Row, Col, Divider, Space, Flex } from "antd";
+import { Button, Select, Table, Row, Col, Divider, Space, Flex } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { ColumnModal } from "./ColumnModal";
-import type { DefaultModuleDataType, ModuleType } from "@/types/module";
+import type { ModuleDataType, ModuleType } from "@/types/module";
 import { ViewModal } from "./ViewModal";
 import type { PaginationType } from "@/types";
 import { axiosClient } from "@/services/axiosClient";
 import { useAuth } from "@/providers/AuthContext";
-import { formatDate } from "@/utils/dateFormatter";
 import { successMessageHandler } from "@/utils/notificationHandler";
+import { DynamicField } from "@/components/DynamicField";
+import { preprocessData } from "@/utils";
 
 const { Option } = Select;
 
@@ -16,7 +17,7 @@ interface BuilderProps {
   relatedType?: "role" | "user",
   relatedId?: string;
 }
-type AccessConfigType = Record<string, DefaultModuleDataType>;
+type AccessConfigType = Record<string, ModuleDataType>;
 
 const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const { modules } = useAuth();
@@ -35,7 +36,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const [loading, setLoading] = useState(false);
   const [viewLoading, setViewLoading] = useState(true);
 
-  const defaultModuleData: DefaultModuleDataType = {
+  const defaultModuleData: ModuleDataType = {
     columns: [],
     conditions: {},
     module_ids: []
@@ -191,30 +192,11 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     }
   }, [currentModule])
 
-  const preprocessTableData = (rows: ModuleType['rows']['data']) => {
-    return rows.map((row) => {
-      const newRow: Record<string, any> = {};
-
-      Object.entries(row).forEach(([key, value]) => {
-        if (
-          typeof value === "string" &&
-          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)
-        ) {
-          newRow[key] = formatDate(value);
-        } else {
-          newRow[key] = value;
-        }
-      });
-
-      return newRow;
-    });
-  };
-
   const columns: ColumnsType<any> =
-    currentModule?.columns.map((col) => ({
-      title: col,
-      dataIndex: col,
-      key: col
+    currentModule?.columns.map((column) => ({
+      title: column,
+      dataIndex: column,
+      key: column
     })) || [];
 
   return (
@@ -251,59 +233,20 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
           </Col>
         </Row>
         <Space wrap>
-          {currentModule?.conditions.map((condition, index) => (
-            <Form.Item className="!mb-0" key={index}>
-              {condition.type === "select" ? (
-                <Select
-                  mode="multiple"
-                  placeholder={`Select ${condition.label}`}
-                  className="w-full min-w-40"
-                  value={selectedConditions[condition.key] || []}
-                  onChange={(value) =>
-                    setSelectedConditions((prev) => ({
-                      ...prev,
-                      [condition.key]: value,
-                    }))
-                  }
-                  disabled={loading}
-                  allowClear
-                >
-                  {condition.options?.map((option) => (
-                    <Select.Option key={option} value={option}>
-                      {option}
-                    </Select.Option>
-                  ))}
-                </Select>
-              ) : condition.type === "number" ? (
-                <Input
-                  type="number"
-                  value={selectedConditions[condition.key] || ""}
-                  className="w-full"
-                  onChange={(e) =>
-                    setSelectedConditions((prev) => ({
-                      ...prev,
-                      [condition.key]: e.target.value,
-                    }))
-                  }
-                  placeholder={condition.placeholder || `Enter ${condition.label}`}
-                  disabled={loading}
-                />
-              ) : (
-                <Input
-                  type="text"
-                  value={selectedConditions[condition.key] || ""}
-                  className="w-full"
-                  onChange={(e) =>
-                    setSelectedConditions((prev) => ({
-                      ...prev,
-                      [condition.key]: e.target.value
-                    }))
-                  }
-                  placeholder={condition.placeholder || `Enter ${condition.label}`}
-                  disabled={loading}
-                />
-              )}
-            </Form.Item>
+          {currentModule?.conditions.map((condition) => (
+            <DynamicField
+              key={condition.key}
+              field={condition}
+              value={selectedConditions[condition.key]}
+              loading={loading}
+              onChange={(value) =>
+                setSelectedConditions((prev) => ({
+                  ...prev,
+                  [condition.key]: value,
+                }))
+              }
+              classname="!mb-0"
+            />
           ))}
         </Space>
         {selectedModule && (
@@ -326,7 +269,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       {selectedModule && (
         <Table
           rowKey="id"
-          dataSource={preprocessTableData(currentModule?.rows?.data || [])}
+          dataSource={preprocessData(currentModule?.rows?.data || [])}
           columns={columns}
           loading={loading}
           rowSelection={{

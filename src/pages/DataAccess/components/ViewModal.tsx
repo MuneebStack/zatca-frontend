@@ -1,16 +1,16 @@
 import React from "react";
 import { Modal, Collapse, Row, Col, Empty, Space, Tag, Popconfirm, Divider, Typography, Button } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
-import { capitalize } from "@/utils";
-import type { DefaultModuleDataType } from "@/types/module";
+import { capitalize, dataTransformer } from "@/utils";
+import type { ModuleDataType } from "@/types/module";
 
 const { Text } = Typography;
 
 interface ViewModalProps {
     isOpen: boolean;
     onClose: () => void;
-    accessConfig: Record<string, DefaultModuleDataType>;
-    setAccessConfig: React.Dispatch<React.SetStateAction<Record<string, DefaultModuleDataType>>>;
+    accessConfig: Record<string, ModuleDataType>;
+    setAccessConfig: React.Dispatch<React.SetStateAction<Record<string, ModuleDataType>>>;
 }
 
 const ViewModal: React.FC<ViewModalProps> = ({
@@ -117,7 +117,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
                                                     closable
                                                     onClose={() => handleRemoveConditionValue(moduleKey, field, value)}
                                                 >
-                                                    {String(value)}
+                                                    {dataTransformer(value)}
                                                 </Tag>
                                             ))}
                                         </Space>

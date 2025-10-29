@@ -1,13 +1,9 @@
+import type { FieldType } from ".";
+
 export interface ModuleType {
     key: string;
     name: string;
-    conditions: {
-        key: string;
-        label: string;
-        type: string;
-        options?: string[];
-        placeholder?: string;
-    }[];
+    conditions: FieldType[];
     columns: string[];
     rows: {
         data: Record<string, any>[];
@@ -16,7 +12,7 @@ export interface ModuleType {
     };
 }
 
-export interface DefaultModuleDataType {
+export interface ModuleDataType {
     columns: string[];
     conditions: Record<string, (string | number)[]>;
     module_ids: React.Key[];
