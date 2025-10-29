@@ -25,6 +25,6 @@ Component Structure
     4b. Custom Constants
     4c. Custom Functions
     4d. Use Effects
-    4e. Any inner component props long details --> as a constant
-    4f. Return statement
+    4e. Any inner component props long details --> as a constant || UI Helper
+    4f. Return JSX
 5. Export Component with named approach
