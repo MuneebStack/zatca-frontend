@@ -5,15 +5,18 @@ import { FullPageLoader } from "@/components/FullPageLoader";
 import { axiosClient } from "@/services/axiosClient";
 import type { UserType } from "@/types/user";
 import type { ModuleType } from "@/types/module";
+import type { NavigationType } from "@/types/navigation";
 
 type ConfigType = Record<string, any>;
 type ShortModuleType = Pick<ModuleType, "key" | "name">[];
 
 interface AuthContextType {
     user?: UserType;
-    configs: ConfigType;
-    modules: ShortModuleType
     isAuthenticated: boolean;
+    configs: ConfigType;
+    modules: ShortModuleType;
+    navigations: NavigationType[];
+    setNavigations: React.Dispatch<React.SetStateAction<NavigationType[]>>;
     login: (token: string, expiresAt: string) => void;
     logout: (showMessage?: boolean) => void;
 }
@@ -27,7 +30,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider = ({ children }: AuthProviderType) => {
     const [user, setUser] = useState<UserType>();
     const [configs, setConfigs] = useState<ConfigType>({});
-    const [modules, setModules] = useState<ShortModuleType>([])
+    const [modules, setModules] = useState<ShortModuleType>([]);
+    const [navigations, setNavigations] = useState<NavigationType[]>([]);
     const [loading, setLoading] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
@@ -87,10 +91,11 @@ const AuthProvider = ({ children }: AuthProviderType) => {
             .then(({ data: responseData}) => {
                 if (responseData?.data) {
                     const payload = responseData.data;
-                    const { user, configs, modules } = payload;
+                    const { user, configs, modules, navigations: fetchedNavigations } = payload;
                     setUser(user);
                     setConfigs(configs);
                     setModules(modules);
+                    setNavigations(fetchedNavigations);
                 }
             })
             .catch((error) => (error))
@@ -112,7 +117,18 @@ const AuthProvider = ({ children }: AuthProviderType) => {
     }, [isGuestRoute])
 
     return (
-        <AuthContext.Provider value={{ user, configs, modules, isAuthenticated, login, logout }}>
+        <AuthContext.Provider 
+            value={{ 
+                user,
+                isAuthenticated,
+                configs,
+                modules,
+                navigations,
+                setNavigations,
+                login,
+                logout
+            }}
+        >
             {loading ? <FullPageLoader /> : children}
         </AuthContext.Provider>
     );

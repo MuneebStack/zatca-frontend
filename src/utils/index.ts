@@ -16,4 +16,26 @@ const removeEmptyChildren = <T extends { children?: T[] }>(input: T | T[]): T | 
     return Array.isArray(input) ? input.map(cleanItem) : cleanItem(input);
 };
 
-export { capitalize, removeEmptyChildren };
+
+const flattenTree = <T extends { id: number | string; name: string; children?: T[] }>(
+    items: T[],
+    updateName = false,
+    parentPath = ""
+): T[] => {
+    const result: T[] = [];
+
+    for (const item of items) {
+        const fullName = updateName ? (parentPath ? `${parentPath} > ${item.name}` : item.name) : item.name;
+
+        const newItem = { ...item, name: fullName };
+        result.push(newItem);
+
+        if (item.children && item.children.length > 0) {
+            result.push(...flattenTree(item.children, updateName, fullName));
+        }
+    }
+
+    return result;
+};
+
+export { capitalize, removeEmptyChildren, flattenTree };

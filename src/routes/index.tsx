@@ -27,185 +27,40 @@ export function AppRoutes() {
   return (
     <Suspense fallback={<FullPageLoader />}>
       <Routes>
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <GuestLayout>
-                <Login />
-              </GuestLayout>
-            </PublicRoute>
-          }
-        />
+        <Route element={<PublicRoute><GuestLayout /></PublicRoute>}>
+          <Route path="/login" element={<Login />} />
+        </Route>
 
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <Dashboard />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <Users />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/users/create"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <CreateUser />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/users/edit/:id"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <EditUser />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/users/view/:id"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <ViewUser />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
+        <Route element={<PrivateRoute><AuthLayout /></PrivateRoute>}>
+          <Route path="/" element={<Dashboard />} />
 
-        <Route
-          path="/tokens"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <Tokens />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
+          <Route path="/users" element={<Users />}>
+            <Route path="create" element={<CreateUser />} />
+            <Route path="edit/:id" element={<EditUser />} />
+            <Route path="view/:id" element={<ViewUser />} />
+          </Route>
 
-        <Route
-          path="/permissions/roles"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <RolesPermissions />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/permissions/users"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <UsersPermissions />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/permissions/roles/:id"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <RolePermissions />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/permissions/users/:id"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <UserPermissions />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
+          <Route path="/permissions">
+            <Route path="roles" element={<RolesPermissions />} />
+            <Route path="roles/:id" element={<RolePermissions />} />
+            <Route path="users" element={<UsersPermissions />} />
+            <Route path="users/:id" element={<UserPermissions />} />
+          </Route>
 
-        <Route
-          path="/data-access/roles"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <RolesDataAccess />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/data-access/users"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <UsersDataAccess />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/data-access/roles/:id"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <RoleDataAccess />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/data-access/users/:id"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <UserDataAccess />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
+          <Route path="/data-access">
+            <Route path="roles" element={<RolesDataAccess />} />
+            <Route path="roles/:id" element={<RoleDataAccess />} />
+            <Route path="users" element={<UsersDataAccess />} />
+            <Route path="users/:id" element={<UserDataAccess />} />
+          </Route>
 
-        <Route
-          path="/navigations"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <Navigations />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/settings"
-          element={
-            <PrivateRoute>
-              <AuthLayout>
-                <Settings />
-              </AuthLayout>
-            </PrivateRoute>
-          }
-        />
+          <Route path="/tokens" element={<Tokens />} />
+          <Route path="/navigations" element={<Navigations />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Suspense>
+    </Suspense >
   );
 }

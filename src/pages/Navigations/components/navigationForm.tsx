@@ -3,28 +3,32 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import { axiosClient } from "@/services/axiosClient";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import { antdIconRender } from "@/utils/antdIconRender";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FormInstance } from "antd";
 import type { NavigationType } from "@/types/navigation";
-import { removeEmptyChildren } from "@/utils";
+import { flattenTree, removeEmptyChildren } from "@/utils";
 
 interface NavigationFormProps {
     form: FormInstance;
-    mode?: "create" | "edit" | "";
+    mode: "create" | "edit";
+    navigations: NavigationType[];
     onSuccess: (navigation: NavigationType) => void;
 }
 
 const NavigationForm = ({
     form,
     mode,
+    navigations,
     onSuccess
 }: NavigationFormProps) => {
     const [loading, setLoading] = useState(false);
-    const [navigationLoading, setNavigationLoading] = useState(false);
-    const [allNavigations, setAllNavigations] = useState<NavigationType[]>([]);
-    const [navigations, setNavigations] = useState<NavigationType[]>([]);
     const [iconName, setIconName] = useState<string>("");
-    const editRecordId : number | undefined = form.getFieldValue("id");
+
+    const editRecordId: number | undefined = form.getFieldValue("id");
+    const flatNavigations = flattenTree(
+            mode === "edit" ? navigations.filter((navigation) => navigation.id !== editRecordId) : navigations,
+            true
+    );
 
     const onFinish = (values: any) => {
         setLoading(true);
@@ -37,43 +41,14 @@ const NavigationForm = ({
         request
             .then(({ data: responseData }) => {
                 if (responseData?.data) {
-                    onSuccess(removeEmptyChildren(responseData.data.data));
+                    const payload = responseData.data.data;
+                    onSuccess(removeEmptyChildren(payload));
                     successMessageHandler(responseData);
                 }
             })
             .catch((error) => error)
             .finally(() => setLoading(false));
     };
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        setNavigationLoading(true);
-        axiosClient
-            .get("portal/navigations", {
-                params: { bypass_pagination: true },
-                signal: controller.signal
-            })
-            .then(({ data: responseData }) => {
-                if (responseData?.data) {
-                    setAllNavigations(removeEmptyChildren(responseData.data.data));
-                }
-            })
-            .catch(() => { })
-            .finally(() => setNavigationLoading(false));
-
-        return () => controller.abort();
-    }, []);
-
-    useEffect(() => {
-        if (allNavigations.length === 0) return;
-
-        if (mode === "edit" && editRecordId) {
-            setNavigations(allNavigations.filter((navigation) => navigation.id !== editRecordId));
-        } else {
-            setNavigations(allNavigations);
-        }
-    }, [mode, editRecordId, allNavigations]);
 
     return (
         <Form
@@ -149,12 +124,10 @@ const NavigationForm = ({
                 <Select
                     placeholder="Select a parent menu"
                     allowClear
-                    options={navigations.map((navigation) => ({
+                    options={flatNavigations.map((navigation) => ({
                         label: navigation.name,
                         value: navigation.id,
                     }))}
-                    loading={navigationLoading}
-                    disabled={navigationLoading}
                 />
             </Form.Item>
 

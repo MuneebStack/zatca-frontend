@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Table, Popconfirm, Modal, Typography, Flex, Form, Space } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { axiosClient } from "@/services/axiosClient";
@@ -9,6 +9,7 @@ import type { NavigationType } from "@/types/navigation";
 import { antdIconRender } from "@/utils/antdIconRender";
 import { removeEmptyChildren } from "@/utils";
 import { NavigationForm } from "./components/navigationForm";
+import { useAuth } from "@/providers/AuthContext";
 
 const { Title } = Typography;
 
@@ -23,6 +24,8 @@ const Navigations = () => {
     const [form] = Form.useForm();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const { setNavigations: setGlobalNavigations } = useAuth();
+    const firstRender = useRef(true);
 
     const insertNavigation = (
         navigations: NavigationType[],
@@ -142,6 +145,15 @@ const Navigations = () => {
         return () => controller.abort();
     }, [pagination.current, pagination.pageSize]);
 
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+
+        setGlobalNavigations(navigations);
+    }, [navigations])
+
     const columns: ColumnsType<NavigationType> = [
         {
             title: "Name",
@@ -233,6 +245,7 @@ const Navigations = () => {
                 <NavigationForm
                     form={form}
                     mode="create"
+                    navigations={navigations}
                     onSuccess={(newNavigation) => {
                         setNavigations((prev) => insertNavigation(prev, newNavigation));
                         setIsCreateModalOpen(false);
@@ -250,6 +263,7 @@ const Navigations = () => {
                 <NavigationForm
                     form={form}
                     mode="edit"
+                    navigations={navigations}
                     onSuccess={(updatedNavigation) => {
                         setNavigations((prev) => updateNavigation(prev, updatedNavigation));
                         setIsEditModalOpen(false);

@@ -1,8 +1,9 @@
 import { Layout, Menu, Row, Typography } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, SettingOutlined, DashboardOutlined, ApiOutlined, SafetyOutlined, EyeOutlined } from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/providers/AuthContext";
+import { antdIconRender } from "@/utils/antdIconRender";
 
 const { Sider } = Layout;
 const { Title, Text } = Typography;
@@ -12,7 +13,7 @@ const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const { configs } = useAuth();
+    const { configs, navigations } = useAuth();
 
     useEffect(() => {
         const checkScreen = () => setIsMobile(window.innerWidth < AntdSMBreakpoint);
@@ -21,63 +22,24 @@ const Sidebar = () => {
         return () => window.removeEventListener("resize", checkScreen);
     }, []);
 
-    const items = [
-        {
-            key: "/",
-            icon: <DashboardOutlined />,
-            label: <Link to="/">Dashboard</Link>,
-        },
-        {
-            key: "/users",
-            icon: <UserOutlined />,
-            label: <Link to="/users">Users</Link>,
-        },
-        {
-            key: "/tokens",
-            icon: <ApiOutlined />,
-            label: <Link to="/tokens">Tokens</Link>,
-        },
-        {
-            key: "/permissions",
-            icon: <SafetyOutlined />,
-            label: "Permissions",
-            children: [
-                {
-                    key: "/permissions/roles",
-                    label: <Link to="/permissions/roles">Roles</Link>,
-                },
-                {
-                    key: "/permissions/users",
-                    label: <Link to="/permissions/users">Users</Link>,
-                },
-            ],
-        },
-        {
-            key: "/data-access",
-            icon: <EyeOutlined />,
-            label: "Data Access",
-            children: [
-                {
-                    key: "/data-access/roles",
-                    label: <Link to="/data-access/roles">Roles</Link>,
-                },
-                {
-                    key: "/data-access/users",
-                    label: <Link to="/data-access/users">Users</Link>,
-                },
-            ],
-        },
-        {
-            key: "/navigations",
-            icon: <SettingOutlined />,
-            label: <Link to="/navigations">Navigations</Link>,
-        },
-        {
-            key: "/settings",
-            icon: <SettingOutlined />,
-            label: <Link to="/settings">Settings</Link>,
-        },
-    ];
+    const buildMenuItems = (navs: any[]): any[] => {
+        return navs
+            .map((nav) => {
+                const hasChildren = nav.children && nav.children.length > 0;
+                return {
+                    key: nav.route,
+                    icon: antdIconRender(nav.icon),
+                    label: nav.route ? (
+                        <Link to={nav.route}>{nav.name}</Link>
+                    ) : (
+                        nav.name
+                    ),
+                    children: hasChildren ? buildMenuItems(nav.children) : undefined,
+                };
+            });
+    };
+
+    const menuItems = useMemo(() => buildMenuItems(navigations || []), [navigations]);
 
     return (
         <Sider
@@ -89,7 +51,7 @@ const Sidebar = () => {
             collapsedWidth={100}
         >
             <Row
-                className={`flex items-center h-12 px-4 ${collapsed ? "justify-center" : "justify-between"}`}
+                className={`flex items-center h-12 px-4 py-4 ${collapsed ? "justify-center" : "justify-between"}`}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
             >
@@ -110,10 +72,10 @@ const Sidebar = () => {
                 )}
             </Row>
             <Menu
-                className="!border-r-0"
+                className="!border-r-0 !mt-3"
                 mode="inline"
                 selectedKeys={[location.pathname]}
-                items={items}
+                items={menuItems}
             />
         </Sider>
     );
