@@ -7,7 +7,7 @@ import type { PaginationType } from "@/types";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import type { NavigationType } from "@/types/navigation";
 import { antdIconRender } from "@/utils/antdIconRender";
-import { removeEmptyChildren } from "@/utils";
+import { buildTree, flattenTree, removeEmptyChildren } from "@/utils";
 import { NavigationForm } from "./components/navigationForm";
 import { useAuth } from "@/providers/AuthContext";
 
@@ -31,74 +31,27 @@ const Navigations = () => {
         navigations: NavigationType[],
         newNavigation: NavigationType
     ): NavigationType[] => {
-        if (!newNavigation.parent_id) {
-            return [newNavigation, ...navigations].sort((a, b) => a.order - b.order);
-        }
-
-        return navigations.map((navigation) => {
-            if (navigation.id === newNavigation.parent_id) {
-                const updatedChildren = [...(navigation.children ?? []), newNavigation].sort((a, b) => a.order - b.order);
-                return { ...navigation, children: updatedChildren };
-            }
-
-            if (navigation.children && navigation.children.length > 0) {
-                return { ...navigation, children: insertNavigation(navigation.children, newNavigation) };
-            }
-
-            return navigation;
-        });
+        const flatNavigations = flattenTree(navigations);
+        flatNavigations.push(newNavigation);
+        return buildTree(flatNavigations, 'order');
     }
 
     const updateNavigation = (
         navigations: NavigationType[],
         updatedNavigation: NavigationType
     ): NavigationType[] => {
-        const flatNavigations = navigations
-            .map((navigation) => {
-                const updatedChildren = navigation.children ? updateNavigation(navigation.children, updatedNavigation) : undefined;
-                return {
-                    ...navigation,
-                    ...(updatedChildren && updatedChildren.length > 0 ? { children: updatedChildren } : {})
-                };
-            })
-            .filter((navigation) => navigation.id !== updatedNavigation.id);
-
-        if (!updatedNavigation.parent_id) {
-            return [updatedNavigation, ...flatNavigations].sort((a, b) => a.order - b.order);
-        }
-
-        return flatNavigations.map((navigation) => {
-            if (navigation.id === updatedNavigation.parent_id) {
-                const updatedChildren = [
-                    ...(navigation.children ?? []),
-                    updatedNavigation,
-                ].sort((a, b) => a.order - b.order);
-                return { ...navigation, children: updatedChildren };
-            }
-            return navigation;
-        });
+        const flatNavigations = flattenTree(navigations).sort((a, b) => a.order - b.order);
+        const updatedNavigations = flatNavigations.map((navigation) => navigation.id == updatedNavigation.id ? updatedNavigation : navigation);
+        return buildTree(updatedNavigations, 'order');
     };
 
     const deleteNavigation = (
         navigations: NavigationType[],
         navigationId: number
     ): NavigationType[] => {
-        return navigations
-            .filter((navigation) => navigation.id !== navigationId)
-            .map((navigation) => {
-                if (navigation.children && navigation.children.length > 0) {
-                    const updatedChildren = deleteNavigation(navigation.children, navigationId);
-
-                    if (updatedChildren.length > 0) {
-                        return { ...navigation, children: updatedChildren };
-                    } else {
-                        const { children, ...rest } = navigation;
-                        return rest;
-                    }
-                }
-
-                return navigation;
-            });
+        const flatNavigations = flattenTree(navigations);
+        const filtered = flatNavigations.filter(nav => nav.id !== navigationId);
+        return buildTree(filtered, 'order');
     };
 
     const onDelete = (navigationId: number) => {
