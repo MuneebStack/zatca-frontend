@@ -13,7 +13,7 @@ interface CreateTokenProps {
     onTokenCreated?: (newToken: TokenType) => void;
 }
 
-const CreateToken = ({ form, setGeneratedToken, setIsTokenModalOpen, setIsCreateModelOpen, onTokenCreated }: CreateTokenProps) => {
+export const CreateToken = ({ form, setGeneratedToken, setIsTokenModalOpen, setIsCreateModelOpen, onTokenCreated }: CreateTokenProps) => {
     const [loading, setLoading] = useState(false);
     const [userLoading, setUserLoading] = useState(false);
     const [users, setUsers] = useState<UserType[]>([]);
@@ -102,7 +102,3 @@ const CreateToken = ({ form, setGeneratedToken, setIsTokenModalOpen, setIsCreate
         </>
     );
 }
-
-export {
-    CreateToken
-};

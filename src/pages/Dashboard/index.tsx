@@ -11,7 +11,7 @@ const iconMap: Record<string, React.ReactNode> = {
     users: <UserOutlined />,
 };
 
-const Dashboard = () => {
+export const Dashboard = () => {
     const [counts, setCounts] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -62,8 +62,4 @@ const Dashboard = () => {
             )}
         </>
     );
-};
-
-export {
-    Dashboard
 };

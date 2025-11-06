@@ -8,7 +8,7 @@ import { RoleSelector } from "@/components/RoleSelector";
 
 const { Text } = Typography;
 
-const Permissions: React.FC = () => {
+export const Permissions: React.FC = () => {
     const [activeTab, setActiveTab] = useState<"role" | "user">("role");
     const [selectedRoleId, setSelectedRoleId] = useState<string | number>();
     const [selectedUserId, setSelectedUserId] = useState<string | number>();
@@ -78,6 +78,4 @@ const Permissions: React.FC = () => {
             </Space>
         </Card>
     );
-};
-
-export { Permissions };
+}

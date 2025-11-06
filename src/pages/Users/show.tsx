@@ -8,7 +8,7 @@ import { formatDate } from "@/utils/date";
 
 const { Text } = Typography;
 
-const ViewUser = () => {
+export const ViewUser = () => {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<UserType>();
     const navigate = useNavigate();
@@ -83,7 +83,3 @@ const ViewUser = () => {
         </>
     );
 }
-
-export {
-    ViewUser
-};

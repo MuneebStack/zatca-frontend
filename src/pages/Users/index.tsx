@@ -10,7 +10,7 @@ import type { PaginationType } from "@/types";
 
 const { Title } = Typography;
 
-const Users = () => {
+export const Users = () => {
     const [users, setUsers] = useState<UserType[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -145,8 +145,4 @@ const Users = () => {
             />
         </Flex>
     )
-}
-
-export {
-    Users
 }

@@ -10,7 +10,7 @@ interface ColumnModalProps {
     accessConfig: Record<string, ModuleDataType>;
 }
 
-const ColumnModal: React.FC<ColumnModalProps> = ({
+export const ColumnModal: React.FC<ColumnModalProps> = ({
     isOpen,
     onClose,
     onSave,
@@ -59,8 +59,4 @@ const ColumnModal: React.FC<ColumnModalProps> = ({
             </Space>
         </Modal>
     );
-};
-
-export {
-    ColumnModal
 }

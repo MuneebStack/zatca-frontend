@@ -15,7 +15,7 @@ interface NavigationFormProps {
     onSuccess: (navigation: NavigationType) => void;
 }
 
-const NavigationForm = ({
+export const NavigationForm = ({
     form,
     mode,
     navigations,
@@ -144,8 +144,4 @@ const NavigationForm = ({
             </Form.Item>
         </Form>
     );
-};
-
-export {
-    NavigationForm
 };

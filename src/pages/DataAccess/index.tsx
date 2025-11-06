@@ -8,7 +8,7 @@ import { Builder } from "./components/Builder";
 
 const { Text } = Typography;
 
-const DataAccess: React.FC = () => {
+export const DataAccess: React.FC = () => {
     const [activeTab, setActiveTab] = useState<"role" | "user">("role");
     const [selectedRoleId, setSelectedRoleId] = useState<string | number>();
     const [selectedUserId, setSelectedUserId] = useState<string | number>();
@@ -75,6 +75,4 @@ const DataAccess: React.FC = () => {
             </Space>
         </Card>
     );
-};
-
-export { DataAccess };
+}

@@ -13,7 +13,7 @@ interface ViewModalProps {
     setAccessConfig: React.Dispatch<React.SetStateAction<Record<string, ModuleDataType>>>;
 }
 
-const ViewModal: React.FC<ViewModalProps> = ({
+export const ViewModal: React.FC<ViewModalProps> = ({
     isOpen,
     onClose,
     accessConfig,
@@ -169,8 +169,4 @@ const ViewModal: React.FC<ViewModalProps> = ({
             )}
         </Modal>
     );
-};
-
-export {
-    ViewModal
 }

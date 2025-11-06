@@ -5,7 +5,7 @@ import { useState } from "react";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import { useNavigate } from "react-router-dom";
 
-const CreateUser = () => {
+export const CreateUser = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -95,7 +95,3 @@ const CreateUser = () => {
         </Card>
     );
 }
-
-export {
-    CreateUser
-};

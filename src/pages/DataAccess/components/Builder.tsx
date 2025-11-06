@@ -21,7 +21,7 @@ interface BuilderProps {
 }
 type AccessConfigType = Record<string, ModuleDataType>;
 
-const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
+export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const { modules } = useAuth();
   const [currentModule, setCurrentModule] = useState<ModuleType>();
   const [pagination, setPagination] = useState<PaginationType>({
@@ -345,8 +345,4 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       />
     </>
   );
-};
-
-export {
-  Builder
 }

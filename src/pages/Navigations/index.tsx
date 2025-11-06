@@ -8,12 +8,12 @@ import { successMessageHandler } from "@/utils/notificationHandler";
 import type { NavigationType } from "@/types/navigation";
 import { antdIconRender } from "@/utils/antdIconRender";
 import { buildTree, flattenTree, removeEmptyChildren } from "@/utils";
-import { NavigationForm } from "./components/navigationForm";
+import { NavigationForm } from "./components/NavigationForm";
 import { useAuth } from "@/providers/AuthContext";
 
 const { Title } = Typography;
 
-const Navigations = () => {
+export const Navigations = () => {
     const [navigations, setNavigations] = useState<NavigationType[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -226,5 +226,3 @@ const Navigations = () => {
         </Flex>
     );
 };
-
-export { Navigations };

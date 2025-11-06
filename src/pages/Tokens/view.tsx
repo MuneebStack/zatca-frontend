@@ -9,7 +9,7 @@ interface ViewTokenProps {
     generatedToken: string
 }
 
-const ViewToken = ({ generatedToken }: ViewTokenProps) => {
+export const ViewToken = ({ generatedToken }: ViewTokenProps) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -45,8 +45,4 @@ const ViewToken = ({ generatedToken }: ViewTokenProps) => {
             </Card>
         </>
     );
-}
-
-export {
-    ViewToken
 }

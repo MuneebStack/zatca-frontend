@@ -16,7 +16,7 @@ interface CategoriesProps {
     relatedId?: string | number;
 }
 
-const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }) => {
+export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }) => {
     const [permissions, setPermissions] = useState<PermissionExtended[]>([]);
     const [updatingIds, setUpdatingIds] = useState<Set<number>>(new Set());
     const [pagination, setPagination] = useState<PaginationType>({
@@ -128,6 +128,4 @@ const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }) => {
             }}
         />
     );
-};
-
-export { Categories };
+}

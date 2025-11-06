@@ -10,7 +10,7 @@ import type { RoleType } from "@/types/role";
 
 const { Title } = Typography;
 
-const Roles = () => {
+export const Roles = () => {
     const [roles, setRoles] = useState<RoleType[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -156,13 +156,11 @@ const Roles = () => {
                     form={form}
                     mode="edit"
                     onSuccess={(updatedRole) => {
-                        setRoles((prev) =>  prev.map(role => role.id === updatedRole.id ? updatedRole : role));
+                        setRoles((prev) => prev.map(role => role.id === updatedRole.id ? updatedRole : role));
                         setIsEditModalOpen(false);
                     }}
                 />
             </Modal>
         </Flex>
     );
-};
-
-export { Roles };
+}

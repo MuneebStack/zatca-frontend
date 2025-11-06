@@ -12,7 +12,7 @@ import { formatDate } from "@/utils/date";
 
 const { Title } = Typography;
 
-const Tokens = () => {
+export const Tokens = () => {
     const [tokens, setTokens] = useState<TokenType[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -222,6 +222,4 @@ const Tokens = () => {
             </Modal>
         </Flex>
     );
-};
-
-export { Tokens };
+}

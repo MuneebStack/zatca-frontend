@@ -11,7 +11,7 @@ interface FormDataType {
     password?: string
 }
 
-const EditUser = () => {
+export const EditUser = () => {
     const [loading, setLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(true);
     const [initialValues, setInitialValues] = useState<FormDataType>();
@@ -21,7 +21,7 @@ const EditUser = () => {
     const onFinish = (values: any) => {
         if (params?.id) {
             setLoading(true);
-                        
+
             !values.password && delete values.password;
 
             axiosClient
@@ -127,7 +127,3 @@ const EditUser = () => {
         </Card>
     );
 }
-
-export {
-    EditUser
-};
