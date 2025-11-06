@@ -16,6 +16,7 @@ import { Tokens } from '@/pages/Tokens';
 import { Permissions } from '@/pages/Permissions';
 import { Navigations } from '@/pages/Navigations';
 import { DataAccess } from '@/pages/DataAccess';
+import { Roles } from '@/pages/Roles';
 
 export function AppRoutes() {
   return (
@@ -34,12 +35,11 @@ export function AppRoutes() {
             <Route path="view/:id" element={<ViewUser />} />
           </Route>
 
+          <Route path="/roles" element={<Roles />} />
           <Route path="/permissions" element={<Permissions />} />
-
           <Route path="/data-access" element={<DataAccess />} />
-
-          <Route path="/tokens" element={<Tokens />} />
           <Route path="/navigations" element={<Navigations />} />
+          <Route path="/tokens" element={<Tokens />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
 
