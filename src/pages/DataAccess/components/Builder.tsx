@@ -17,7 +17,7 @@ const { Option } = Select;
 
 interface BuilderProps {
   relatedType?: "role" | "user",
-  relatedId?: string;
+  relatedId?: string | number;
 }
 type AccessConfigType = Record<string, ModuleDataType>;
 
@@ -46,7 +46,7 @@ const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
 
   const getModuleData = (moduleKey: string) => accessConfig[moduleKey] || defaultModuleData;
 
-  const transformCondition = (conditions : ModuleDataType["conditions"], inBound: boolean) => {
+  const transformCondition = (conditions: ModuleDataType["conditions"], inBound: boolean) => {
     if (!conditions) return {};
 
     const updatedConditions = JSON.parse(JSON.stringify(conditions));

@@ -13,7 +13,7 @@ interface PermissionExtended extends Permission {
 
 interface CategoriesProps {
     relatedType?: "role" | "user",
-    relatedId?: string;
+    relatedId?: string | number;
 }
 
 const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }) => {

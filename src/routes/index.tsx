@@ -13,15 +13,9 @@ import { CreateUser } from '@/pages/Users/create';
 import { ViewUser } from '@/pages/Users/show';
 import { EditUser } from '@/pages/Users/edit';
 import { Tokens } from '@/pages/Tokens';
-import { Roles as RolesPermissions } from '@/pages/Permissions/Roles';
-import { Users as UsersPermissions } from '@/pages/Permissions/Users';
-import { Role as RolePermissions } from '@/pages/Permissions/Role';
-import { User as UserPermissions } from '@/pages/Permissions/User';
+import { Permissions } from '@/pages/Permissions';
 import { Navigations } from '@/pages/Navigations';
-import { Roles as RolesDataAccess } from '@/pages/DataAccess/Roles';
-import { Users as UsersDataAccess } from '@/pages/DataAccess/Users';
-import { Role as RoleDataAccess } from '@/pages/DataAccess/Role';
-import { User as UserDataAccess } from '@/pages/DataAccess/User';
+import { DataAccess } from '@/pages/DataAccess';
 
 export function AppRoutes() {
   return (
@@ -40,19 +34,9 @@ export function AppRoutes() {
             <Route path="view/:id" element={<ViewUser />} />
           </Route>
 
-          <Route path="/permissions">
-            <Route path="roles" element={<RolesPermissions />} />
-            <Route path="roles/:id" element={<RolePermissions />} />
-            <Route path="users" element={<UsersPermissions />} />
-            <Route path="users/:id" element={<UserPermissions />} />
-          </Route>
+          <Route path="/permissions" element={<Permissions />} />
 
-          <Route path="/data-access">
-            <Route path="roles" element={<RolesDataAccess />} />
-            <Route path="roles/:id" element={<RoleDataAccess />} />
-            <Route path="users" element={<UsersDataAccess />} />
-            <Route path="users/:id" element={<UserDataAccess />} />
-          </Route>
+          <Route path="/data-access" element={<DataAccess />} />
 
           <Route path="/tokens" element={<Tokens />} />
           <Route path="/navigations" element={<Navigations />} />
