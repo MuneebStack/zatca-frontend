@@ -1,12 +1,12 @@
 import { axiosClient } from "@/services/axiosClient";
 import type { UserType } from "@/types/user";
-import { Button, Flex, Popconfirm, Space, Table, Typography } from "antd"
+import { Button, Flex, Popconfirm, Space, Table, Typography, Modal, Form } from "antd"
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { EyeOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import type { PaginationType } from "@/types";
+import { UserForm } from "./components/UserForm";
 
 const { Title } = Typography;
 
@@ -15,14 +15,13 @@ export const Users = () => {
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
     });
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-
-    const onView = (userId: number) => navigate(`/users/view/${userId}`);
-
-    const onEdit = (userId: number) => navigate(`/users/edit/${userId}`);
+    const [loading, setLoading] = useState(false);
+    const [createForm] = Form.useForm();
+    const [editForm] = Form.useForm();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const onDelete = (userId: number) => {
         setLoading(true);
@@ -41,6 +40,7 @@ export const Users = () => {
     useEffect(() => {
         const controller = new AbortController();
 
+        setLoading(true);
         axiosClient
             .get("portal/users", {
                 params: {
@@ -90,13 +90,12 @@ export const Users = () => {
             key: "action",
             render: (_: unknown, record: UserType) => (
                 <Space size="middle">
-                    <EyeOutlined
-                        className="cursor-pointer !text-blue-600"
-                        onClick={() => onView(record.id)}
-                    />
                     <EditOutlined
                         className="cursor-pointer !text-green-500"
-                        onClick={() => onEdit(record.id)}
+                        onClick={() => {
+                            editForm.setFieldsValue(record);
+                            setIsEditModalOpen(true);
+                        }}
                     />
                     <Popconfirm
                         title="Are you sure to delete this user?"
@@ -110,7 +109,7 @@ export const Users = () => {
                     </Popconfirm>
                 </Space>
             ),
-        },
+        }
     ];
 
     return (
@@ -119,11 +118,9 @@ export const Users = () => {
                 <Title level={4}>
                     Users
                 </Title>
-                <NavLink to="/users/create">
-                    <Button type="primary" icon={<PlusOutlined />}>
-                        Create User
-                    </Button>
-                </NavLink>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalOpen(true)}>
+                    Create User
+                </Button>
             </Flex>
 
             <Table
@@ -143,6 +140,40 @@ export const Users = () => {
                 }}
                 bordered
             />
+
+            <Modal
+                title="Create User"
+                open={isCreateModalOpen}
+                onCancel={() => setIsCreateModalOpen(false)}
+                afterClose={() => createForm.resetFields()}
+                footer={null}
+            >
+                <UserForm
+                    form={createForm}
+                    mode="create"
+                    onSuccess={(newUser) => {
+                        setUsers((prev) => [newUser, ...prev]);
+                        setIsCreateModalOpen(false);
+                    }}
+                />
+            </Modal>
+
+            <Modal
+                title="Edit User"
+                open={isEditModalOpen}
+                onCancel={() => setIsEditModalOpen(false)}
+                afterClose={() => editForm.resetFields()}
+                footer={null}
+            >
+                <UserForm
+                    form={editForm}
+                    mode="edit"
+                    onSuccess={(updatedUser) => {
+                        setUsers((prev) => prev.map(user => user.id === updatedUser.id ? updatedUser : user));
+                        setIsEditModalOpen(false);
+                    }}
+                />
+            </Modal>
         </Flex>
     )
 }

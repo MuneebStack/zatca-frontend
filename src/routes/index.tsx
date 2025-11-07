@@ -9,9 +9,6 @@ import { PrivateRoute } from '@/middlewares/PrivateRoute';
 import { PublicRoute } from '@/middlewares/PublicRoute';
 import { Suspense } from 'react';
 import { FullPageLoader } from '@/components/FullPageLoader';
-import { CreateUser } from '@/pages/Users/create';
-import { ViewUser } from '@/pages/Users/show';
-import { EditUser } from '@/pages/Users/edit';
 import { Tokens } from '@/pages/Tokens';
 import { Permissions } from '@/pages/Permissions';
 import { Navigations } from '@/pages/Navigations';
@@ -28,13 +25,7 @@ export function AppRoutes() {
 
         <Route element={<PrivateRoute><AuthLayout /></PrivateRoute>}>
           <Route path="/" element={<Dashboard />} />
-
-          <Route path="/users" element={<Users />}>
-            <Route path="create" element={<CreateUser />} />
-            <Route path="edit/:id" element={<EditUser />} />
-            <Route path="view/:id" element={<ViewUser />} />
-          </Route>
-
+          <Route path="/users" element={<Users />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/permissions" element={<Permissions />} />
           <Route path="/data-access" element={<DataAccess />} />
