@@ -1,65 +1,92 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Typography, Flex, Empty } from "antd";
-import type { DashboardCounts } from "@/types/dashboard";
-import { UserOutlined } from "@ant-design/icons";
+import { Row, Col, Button, Empty, Card, Flex, Typography } from "antd";
+import { SettingOutlined } from "@ant-design/icons";
+import { WidgetCard } from "./components/WidgetCard";
+import { WidgetSidebar } from "./components/WidgetSidebar";
 import { axiosClient } from "@/services/axiosClient";
-import { BlockLoader } from "@/components/BlockLoader";
+import type { WidgetType } from "@/types/widget";
 
-const { Text } = Typography;
+const { Title } = Typography;
 
-const iconMap: Record<string, React.ReactNode> = {
-    users: <UserOutlined />,
-};
+export function Dashboard() {
+    const [widgets, setWidgets] = useState<WidgetType[]>([]);
+    const [selectedWidgetNames, setSelectedWidgetNames] = useState<WidgetType["name"][]>([]);
+    const [openDrawer, setOpenDrawer] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-export const Dashboard = () => {
-    const [counts, setCounts] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const selectedWidgets = widgets.filter((widget) => selectedWidgetNames.includes(widget.name));
+
+    const handleToggle = (toggleWidgetName: string, checked: boolean) => {
+        const updated = checked ? [...selectedWidgetNames, toggleWidgetName] : selectedWidgetNames.filter((widgetName) => widgetName !== toggleWidgetName);
+        setSelectedWidgetNames(updated);
+        localStorage.setItem("selectedWidgets", JSON.stringify(updated));
+    }
 
     useEffect(() => {
         const controller = new AbortController();
 
+        setLoading(true);
         axiosClient
-            .get("portal/dashboard/counts", { signal: controller.signal })
-            .then((response) => {
-                if (response?.data?.data) {
-                    setCounts(response.data.data);
+            .get("portal/widgets/active", {
+                signal: controller.signal
+            })
+            .then(({ data: responseData }) => {
+                if (responseData?.data) {
+                    const payload = responseData.data;
+                    setWidgets(payload.data);
                 }
             })
             .catch((error) => (error))
-            .finally(() => !controller.signal.aborted && setLoading(false))
+            .finally(() => setLoading(false))
 
         return () => controller.abort();
     }, []);
 
-    const entries = counts
-        ? (Object.entries(counts) as [keyof DashboardCounts, number][])
-        : [];
+    useEffect(() => {
+        if (widgets.length) {
+            const saved = localStorage.getItem("selectedWidgets");
+            if (saved) setSelectedWidgetNames(JSON.parse(saved));
+        }
+    }, [widgets])
 
     return (
-        <>
-            {loading && <BlockLoader />}
+        <Card loading={loading}>
 
-            {counts && entries.length > 0 ? (
-                <Row gutter={[16, 16]}>
-                    {entries.map(([key, value]) => (
-                        <Col xs={24} sm={12} md={8} lg={6} key={key}>
-                            <Card>
-                                <Flex align="center" gap={8}>
-                                    {iconMap[key] ?? null}
-                                    <Text className="capitalize" type="secondary">
-                                        {key}
-                                    </Text>
-                                </Flex>
-                                <Text strong className="!text-2xl">
-                                    {value}
-                                </Text>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            ) : (
-                !loading && <Empty />
-            )}
-        </>
+            <Flex vertical gap="middle">
+                <Flex justify="space-between" align="center">
+                    <Title level={4}>
+                        Dashboard
+                    </Title>
+                    <Button
+                        type="primary"
+                        icon={<SettingOutlined />}
+                        onClick={() => setOpenDrawer(true)}
+                    >
+                        Manage Widgets
+                    </Button>
+                </Flex>
+
+                {selectedWidgets.length ? (
+                    <Row gutter={[16, 16]}>
+                        {selectedWidgets.map((widget) => (
+                            <Col key={widget.id} xs={24} sm={12} lg={8}>
+                                <WidgetCard widget={widget} />
+                            </Col>
+                        ))}
+                    </Row>
+                ) : (
+                    <Empty description="No widgets selected" />
+                )}
+            </Flex>
+
+            <WidgetSidebar
+                openDrawer={openDrawer}
+                onClose={() => setOpenDrawer(false)}
+                widgets={widgets}
+                selected={selectedWidgetNames}
+                onToggle={handleToggle}
+            />
+
+        </Card>
     );
-};
+}
