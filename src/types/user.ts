@@ -4,5 +4,4 @@ export interface UserType {
     email: string;
     created_at?: string;
     updated_at?: string;
-    permission_count?: number;
 }
