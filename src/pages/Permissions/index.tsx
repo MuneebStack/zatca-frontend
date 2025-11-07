@@ -28,7 +28,7 @@ export const Permissions: React.FC = () => {
             children: (
                 <RoleSelector
                     value={selectedRoleId}
-                    onSelect={setSelectedRoleId}
+                    onChange={setSelectedRoleId}
                     className="w-64 mt-2!"
                 />
             ),
@@ -39,7 +39,7 @@ export const Permissions: React.FC = () => {
             children: (
                 <UserSelector
                     value={selectedUserId}
-                    onSelect={setSelectedUserId}
+                    onChange={setSelectedUserId}
                     className="w-64  mt-2!"
                 />
             ),

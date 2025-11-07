@@ -8,11 +8,11 @@ const { Option } = Select;
 
 interface UserSelectorProps {
     value?: string | number;
-    onSelect: (id: string | number) => void;
+    onChange?: (id: string | number) => void;
     className?: string;
 }
 
-export const UserSelector: React.FC<UserSelectorProps> = ({ value, onSelect, className }) => {
+export const UserSelector: React.FC<UserSelectorProps> = ({ value, onChange, className }) => {
     const [users, setUsers] = useState<UserType[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -43,7 +43,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({ value, onSelect, cla
             placeholder="Select User"
             className={className}
             value={value}
-            onChange={(value) => onSelect(value)}
+            onChange={(value) => onChange?.(value)}
             loading={loading}
             disabled={loading}
         >

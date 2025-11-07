@@ -8,11 +8,11 @@ const { Option } = Select;
 
 interface RoleSelectorProps {
     value?: string | number;
-    onSelect: (id: string | number) => void;
+    onChange?: (id: string | number) => void;
     className?: string;
 }
 
-export const RoleSelector: React.FC<RoleSelectorProps> = ({ value, onSelect, className }) => {
+export const RoleSelector: React.FC<RoleSelectorProps> = ({ value, onChange, className }) => {
     const [roles, setRoles] = useState<RoleType[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -42,7 +42,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({ value, onSelect, cla
             allowClear
             placeholder="Select Role"
             value={value}
-            onChange={(value) => onSelect(value)}
+            onChange={(value) => onChange?.(value)}
             className={className}
             loading={loading}
             disabled={loading}
