@@ -15,7 +15,7 @@ export const Roles = () => {
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
     });
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();
@@ -67,6 +67,12 @@ export const Roles = () => {
     }, [pagination.current, pagination.pageSize]);
 
     const columns: ColumnsType<RoleType> = [
+        {
+            title: "#",
+            key: "index",
+            width: "5%",
+            render: (_: unknown, __: RoleType, index: number) => (pagination.current - 1) * pagination.pageSize + index + 1,
+        },
         {
             title: "Name",
             dataIndex: "name",
