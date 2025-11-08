@@ -224,6 +224,9 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
         if (typeof value === 'string' && dayjs(value).isValid()) {
           row[key] = formatDate(value);
         }
+        if (key === 'children' && value.length === 0) {
+          delete row[key]
+        }
       }
     })
 
