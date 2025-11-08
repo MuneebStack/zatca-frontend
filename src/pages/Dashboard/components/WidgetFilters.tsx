@@ -1,10 +1,11 @@
-import type { FilterType } from "@/types/widget";
+import type { FieldType } from "@/types";
+import type { WidgetType } from "@/types/widget";
 import { Empty, Form, Select, Space } from "antd";
 
 const { Option } = Select;
 
 interface Props {
-    filters?: FilterType[];
+    filters?: WidgetType["filters"];
     onChange?: (values: Record<string, any>) => void;
 }
 
@@ -13,7 +14,7 @@ export const WidgetFilters: React.FC<Props> = ({ filters = [], onChange }) => {
         onChange?.({ [key]: value });
     };
 
-    const renderFilterContent = (filter: FilterType) => {
+    const renderFilterContent = (filter: FieldType) => {
         switch (filter.type) {
             case "select":
                 return (
@@ -24,7 +25,7 @@ export const WidgetFilters: React.FC<Props> = ({ filters = [], onChange }) => {
                         allowClear
                     >
                         {filter.options?.map((option) => (
-                            <Option key={option.value} value={option.value}>
+                            <Option key={option.key} value={option.key}>
                                 {option.label}
                             </Option>
                         ))}

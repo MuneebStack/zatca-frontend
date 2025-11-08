@@ -27,7 +27,7 @@ const DynamicField: React.FC<DynamicFieldProps> = ({
                 return (
                     <Select
                         mode="multiple"
-                        placeholder={`Select ${field.name}`}
+                        placeholder={`Select ${field.label}`}
                         className="w-full min-w-40"
                         value={value || []}
                         onChange={onChange}
@@ -35,8 +35,8 @@ const DynamicField: React.FC<DynamicFieldProps> = ({
                         allowClear
                     >
                         {field.options?.map((option) => (
-                            <Option key={option} value={option}>
-                                {option}
+                            <Option key={option.key} value={option.key}>
+                                {option.label}
                             </Option>
                         ))}
                     </Select>
@@ -48,7 +48,7 @@ const DynamicField: React.FC<DynamicFieldProps> = ({
                         type="number"
                         value={value || ""}
                         onChange={(e) => onChange(e.target.value)}
-                        placeholder={field.placeholder || `Enter ${field.name}`}
+                        placeholder={field.placeholder || `Enter ${field.label}`}
                         disabled={loading}
                         className="w-full"
                     />
@@ -64,7 +64,7 @@ const DynamicField: React.FC<DynamicFieldProps> = ({
                             formattedDate && onChange(formattedDate);
                         }}
                         disabled={loading}
-                        placeholder={field.placeholder || `Select ${field.name}`}
+                        placeholder={field.placeholder || `Select ${field.label}`}
                     />
                 );
 
@@ -74,7 +74,7 @@ const DynamicField: React.FC<DynamicFieldProps> = ({
                         type="text"
                         value={value || ""}
                         onChange={(e) => onChange(e.target.value)}
-                        placeholder={field.placeholder || `Enter ${field.name}`}
+                        placeholder={field.placeholder || `Enter ${field.label}`}
                         disabled={loading}
                         className="w-full"
                     />

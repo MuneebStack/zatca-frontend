@@ -35,7 +35,7 @@ export const ColumnModal: React.FC<ColumnModalProps> = ({
 
     return (
         <Modal
-            title={`Select Columns for ${currentModule.name}`}
+            title={`Select Columns for ${currentModule.label}`}
             open={isOpen}
             onOk={handleSave}
             onCancel={onClose}

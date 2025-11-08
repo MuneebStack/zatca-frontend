@@ -30,7 +30,7 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     total: 0,
   });
   const [selectedModule, setSelectedModule] = useState<string>();
-  const [selectedConditions, setSelectedConditions] = useState<Record<string, any>>({});
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({});
   const [moduleIds, setModuleIds] = useState<React.Key[]>([]);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -66,7 +66,7 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     if (!selectedModule) return;
 
     const moduleData = getModuleData(selectedModule);
-    const currentConditions = Object.keys(selectedConditions).length > 0 ? { ...selectedConditions } : null;
+    const currentConditions = Object.keys(selectedFilters).length > 0 ? { ...selectedFilters } : null;
 
     const existingConditions = moduleData.conditions || {};
     const mergedConditions: Record<string, any> = { ...existingConditions };
@@ -250,14 +250,14 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               className="w-full"
               onChange={(value) => {
                 setSelectedModule(value);
-                setSelectedConditions({});
+                setSelectedFilters({});
                 setModuleIds([]);
               }}
               value={selectedModule}
             >
               {modules.map((module) => (
                 <Option key={module.key} value={module.key}>
-                  {module.name}
+                  {module.label}
                 </Option>
               ))}
             </Select>
@@ -274,16 +274,16 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
           </Col>
         </Row>
         <Space wrap>
-          {currentModule?.conditions.map((condition) => (
+          {currentModule?.filters.map((filter) => (
             <DynamicField
-              key={condition.key}
-              field={condition}
-              value={selectedConditions[condition.key]}
+              key={filter.key}
+              field={filter}
+              value={selectedFilters[filter.key]}
               loading={loading}
               onChange={(value) => {
-                setSelectedConditions((prev) => ({
+                setSelectedFilters((prev) => ({
                   ...prev,
-                  [condition.key]: value,
+                  [filter.key]: value,
                 }))
               }}
               classname="!mb-0"

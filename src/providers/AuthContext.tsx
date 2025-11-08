@@ -8,7 +8,7 @@ import type { ModuleType } from "@/types/module";
 import type { NavigationType } from "@/types/navigation";
 
 type ConfigType = Record<string, any>;
-type ShortModuleType = Pick<ModuleType, "key" | "name">[];
+type ShortModuleType = Pick<ModuleType, "key" | "label">[];
 
 interface AuthContextType {
     user?: UserType;
