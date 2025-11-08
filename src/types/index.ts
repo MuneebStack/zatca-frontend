@@ -1,3 +1,5 @@
+import type { SelectProps } from "antd";
+
 export interface PaginationType {
     current: number;
     pageSize: number;
@@ -6,10 +8,16 @@ export interface PaginationType {
 
 export type FieldTypeType = "text" | "number" | "select" | "date";
 
+export interface FieldOptionType {
+    key: string;
+    label: string;
+}
+
 export interface FieldType {
     key: string;
-    name: string;
+    label: string;
     type: FieldTypeType;
     placeholder?: string;
-    options?: string[];
+    options?: FieldOptionType[];
+    mode?: SelectProps["mode"];
 }

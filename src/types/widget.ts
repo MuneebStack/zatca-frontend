@@ -1,17 +1,4 @@
-import type { SelectProps } from "antd";
-
-export interface FilterOptionType {
-    label: string;
-    value: string;
-}
-
-export interface FilterType {
-    label: string;
-    type: 'select';
-    key: string;
-    options?: FilterOptionType[];
-    mode?: SelectProps["mode"];
-}
+import type { FieldType } from ".";
 
 export interface WidgetType {
     id: number;
@@ -20,5 +7,5 @@ export interface WidgetType {
     icon?: string;
     type: 'stat';
     order: number;
-    filters?: FilterType[];
+    filters?: FieldType[];
 }

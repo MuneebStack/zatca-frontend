@@ -2,8 +2,8 @@ import type { FieldType } from ".";
 
 export interface ModuleType {
     key: string;
-    name: string;
-    conditions: FieldType[];
+    label: string;
+    filters: FieldType[];
     columns: string[];
     rows: {
         data: Record<string, any>[];
