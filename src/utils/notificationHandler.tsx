@@ -60,7 +60,7 @@ const apiErrorHandler = (error: AxiosError | any) => {
                     dataSource={Object.entries(data.errors)}
                     renderItem={([field, messages]) => (
                         <List.Item>
-                            <Text strong>{capitalize(field, /[-_]/g)}:</Text>&nbsp;
+                            <Text strong>{capitalize(field)}:</Text>&nbsp;
                             <Text type="danger">{(messages as string[]).join(', ')}</Text>
                         </List.Item>
                     )}

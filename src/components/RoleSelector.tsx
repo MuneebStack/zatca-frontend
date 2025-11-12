@@ -49,7 +49,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({ value, onChange, cla
         >
             {roles.map((role) => (
                 <Option key={role.id} value={role.id}>
-                    {capitalize(role.name, /_/)}
+                    {capitalize(role.name)}
                 </Option>
             ))}
         </Select>

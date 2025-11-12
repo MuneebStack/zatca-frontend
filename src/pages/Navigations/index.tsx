@@ -115,7 +115,7 @@ export const Navigations = () => {
             ? (Object.keys(navigations[0]) as (keyof NavigationType)[])
                 .filter((column) => !hiddenColumns.includes(column))
                 .map((column) => ({
-                    title: capitalize(column, /_/),
+                    title: capitalize(column),
                     dataIndex: column,
                     key: column,
                     render: (value: any, _: NavigationType, rowIndex: number) => {

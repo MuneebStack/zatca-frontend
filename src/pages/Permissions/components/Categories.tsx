@@ -91,13 +91,13 @@ export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }
             title: "Permission",
             dataIndex: "name",
             key: "name",
-            render: (name) => capitalize(name, /_/g),
+            render: (name) => capitalize(name),
         },
         {
             title: "Category",
             dataIndex: "category",
             key: "category",
-            render: (category) => capitalize(category, /_/g),
+            render: (category) => capitalize(category),
         },
         {
             title: "Assigned",

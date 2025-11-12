@@ -49,7 +49,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({ value, onChange, cla
         >
             {users.map((user) => (
                 <Option key={user.id} value={user.id}>
-                    {capitalize(user.name, /_/)}
+                    {capitalize(user.name)}
                 </Option>
             ))}
         </Select>

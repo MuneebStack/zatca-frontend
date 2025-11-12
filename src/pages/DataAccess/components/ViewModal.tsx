@@ -32,7 +32,7 @@ export const ViewModal: React.FC<ViewModalProps> = ({
             ...prev,
             [moduleKey]: {
                 ...prev[moduleKey],
-                columns: prev[moduleKey].columns.filter((column: string) => column !== removedColumn),
+                columns: prev[moduleKey].hidden_columns.filter((column: string) => column !== removedColumn),
             },
         }));
     };
@@ -69,7 +69,7 @@ export const ViewModal: React.FC<ViewModalProps> = ({
 
     const items = Object.entries(accessConfig).map(([moduleKey, moduleData]) => ({
         key: moduleKey,
-        label: (capitalize(moduleKey, /_-/)),
+        label: (capitalize(moduleKey)),
         children: (
             <>
                 <Row justify="end" style={{ marginBottom: 8 }}>
@@ -90,8 +90,8 @@ export const ViewModal: React.FC<ViewModalProps> = ({
                         <Space direction="vertical" wrap>
                             <Text strong>Columns</Text>
                             <Space wrap size={[2, 2]} className="ms-3">
-                                {moduleData.columns?.length ? (
-                                    moduleData.columns.map((column: string) => (
+                                {moduleData.hidden_columns?.length ? (
+                                    moduleData.hidden_columns.map((column: string) => (
                                         <Tag key={column} closable onClose={() => handleRemoveColumn(moduleKey, column)}>
                                             {column}
                                         </Tag>

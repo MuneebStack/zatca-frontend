@@ -1,4 +1,4 @@
-const capitalize = (text: string, separator: string | RegExp) => {
+const capitalize = (text: string, separator: string | RegExp = /[_-]/g) => {
     return text.replace(separator, ' ').replace(/\b\w/g, (character) => character.toUpperCase());
 };
 

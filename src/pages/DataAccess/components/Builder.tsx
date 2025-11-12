@@ -235,7 +235,7 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
 
   const columns: ColumnsType<Record<string, any>> =
     currentModule?.columns.map((column) => ({
-      title: capitalize(column, /_/),
+      title: capitalize(column),
       dataIndex: column,
       key: column
     })) || [];
