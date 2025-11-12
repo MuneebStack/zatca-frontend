@@ -22,7 +22,7 @@ export const ColumnModal: React.FC<ColumnModalProps> = ({
     useEffect(() => {
         if (currentModule) {
             const moduleConfig = accessConfig[currentModule.key];
-            setSelectedColumns(moduleConfig?.columns || []);
+            setSelectedColumns(moduleConfig?.hidden_columns || []);
         } else {
             setSelectedColumns([]);
         }
@@ -35,7 +35,7 @@ export const ColumnModal: React.FC<ColumnModalProps> = ({
 
     return (
         <Modal
-            title={`Select Columns for ${currentModule.label}`}
+            title={`Select hidden columns for ${currentModule.label}`}
             open={isOpen}
             onOk={handleSave}
             onCancel={onClose}

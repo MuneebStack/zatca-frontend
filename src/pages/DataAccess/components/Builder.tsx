@@ -39,7 +39,7 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   const [viewLoading, setViewLoading] = useState(true);
 
   const defaultModuleData: ModuleDataType = {
-    columns: [],
+    hidden_columns: [],
     conditions: {},
     module_ids: []
   }
@@ -111,7 +111,7 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
     setModuleIds([]);
   };
 
-  const onAddColumns = (columns: string[]) => {
+  const onAddColumns = (hiddenColumns: string[]) => {
     if (!selectedModule) return;
 
     const moduleData = getModuleData(selectedModule);
@@ -120,7 +120,7 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
       ...prev,
       [selectedModule]: {
         ...moduleData,
-        columns: columns
+        hidden_columns: hiddenColumns
       },
     }));
   };
@@ -163,7 +163,7 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
             const moduleKey = item.module;
             if (moduleKey) {
               acc[moduleKey] = {
-                columns: item.columns ?? [],
+                hidden_columns: item.hidden_columns ?? [],
                 conditions: transformCondition(item.conditions, true),
                 module_ids: item.module_ids ?? []
               };

@@ -13,7 +13,7 @@ export interface ModuleType {
 }
 
 export interface ModuleDataType {
-    columns: string[];
+    hidden_columns: string[];
     conditions: Record<string, (string | number)[]>;
     module_ids: React.Key[];
 }
