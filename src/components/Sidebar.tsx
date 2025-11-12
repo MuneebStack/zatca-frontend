@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/providers/AuthContext";
 import { antdIconRender } from "@/utils/antdIconRender";
+import type { NavigationType } from "@/types/navigation";
+import type { ItemType, MenuItemType } from "antd/es/menu/interface";
 
 const { Sider } = Layout;
 const { Title, Text } = Typography;
@@ -22,14 +24,15 @@ const Sidebar = () => {
         return () => window.removeEventListener("resize", checkScreen);
     }, []);
 
-    const buildMenuItems = (navs: any[]): any[] => {
-        return navs
-            .map((nav) => {
+    const buildMenuItems = (navs: NavigationType[] = []): ItemType<MenuItemType>[] =>
+        navs
+            .map((nav): ItemType<MenuItemType> => {
                 const hasChildren = nav.children && nav.children.length > 0;
+                console.log(nav.route, hasChildren);
                 return {
                     key: nav.route,
                     icon: antdIconRender(nav.icon),
-                    label: nav.route ? (
+                    label: nav.route && !hasChildren ? (
                         <Link to={nav.route}>{nav.name}</Link>
                     ) : (
                         nav.name
@@ -37,9 +40,8 @@ const Sidebar = () => {
                     children: hasChildren ? buildMenuItems(nav.children) : undefined,
                 };
             });
-    };
 
-    const menuItems = useMemo(() => buildMenuItems(navigations || []), [navigations]);
+    const menuItems = useMemo(() => buildMenuItems(navigations), [navigations]);
 
     return (
         <Sider
