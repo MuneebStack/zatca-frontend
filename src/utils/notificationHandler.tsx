@@ -51,7 +51,6 @@ const apiErrorHandler = (error: AxiosError | any) => {
 
     if (error?.response) {
         const data = error.response.data as ApiErrorType;
-        console.log(data);
 
         if (data?.errors && typeof data.errors === 'object' && data?.errors.length !== 0) {
             title = <Text strong>{data?.title || title}</Text>
