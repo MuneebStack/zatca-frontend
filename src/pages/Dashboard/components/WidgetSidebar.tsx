@@ -24,6 +24,7 @@ export const WidgetSidebar: React.FC<Props> = ({
             open={openDrawer}
         >
             <List
+                className="h-full"
                 dataSource={widgets}
                 renderItem={(item) => (
                     <List.Item>
