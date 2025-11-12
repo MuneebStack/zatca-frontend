@@ -120,7 +120,20 @@ export const NavigationForm = ({
                 <Input type="number" placeholder="e.g. 1" />
             </Form.Item>
 
-            <Form.Item name="parent_id" label="Parent Menu">
+            <Form.Item 
+                name="parent_id"
+                label="Parent Menu"
+                rules={[
+                    {
+                        validator: async (_, value) => {
+                            const parentNavgiation = navigations.find((nav) => nav.id === value);
+                            console.log(parentNavgiation, value, navigations);
+                            if (!parentNavgiation?.route) return Promise.resolve();
+                            return Promise.reject(new Error("Parent menu cannot have a route"));
+                        },
+                    },
+                ]}
+            >
                 <Select
                     placeholder="Select a parent menu"
                     allowClear

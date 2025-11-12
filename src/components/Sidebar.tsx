@@ -28,7 +28,6 @@ const Sidebar = () => {
         navs
             .map((nav): ItemType<MenuItemType> => {
                 const hasChildren = nav.children && nav.children.length > 0;
-                console.log(nav.route, hasChildren);
                 return {
                     key: nav.route,
                     icon: antdIconRender(nav.icon),
