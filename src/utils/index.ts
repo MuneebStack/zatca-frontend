@@ -1,3 +1,5 @@
+import type { ColumnsType, ColumnType } from "antd/es/table";
+
 const capitalize = (text: string, separator: string | RegExp = /[_-]/g) => {
     return text.replace(separator, ' ').replace(/\b\w/g, (character) => character.toUpperCase());
 };
@@ -106,4 +108,25 @@ const buildTree = <
     return sortRecursively(roots);
 };
 
-export { capitalize, removeEmptyChildren, flattenTree, buildTree };
+function filterTableColumns<T extends object>(
+    columns: ColumnsType<T>,
+    data: T[],
+    hiddenColumns: (keyof T)[] = []
+): ColumnsType<T> {
+    if (!data?.length) return columns;
+
+    const firstRow = data?.[0];
+    return columns.filter((col): col is ColumnType<T> => {
+        if (!("dataIndex" in col) || col.dataIndex === undefined) return true;
+
+        const dataIndex = col.dataIndex;
+
+        return (
+            (typeof dataIndex === "string" || typeof dataIndex === "number") &&
+            dataIndex in firstRow &&
+            !hiddenColumns.includes(dataIndex as keyof T)
+        );
+    });
+}
+
+export { capitalize, removeEmptyChildren, flattenTree, buildTree, filterTableColumns };
