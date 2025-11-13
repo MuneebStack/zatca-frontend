@@ -7,7 +7,7 @@ import type { PaginationType } from "@/types";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import type { NavigationType } from "@/types/navigation";
 import { antdIconRender } from "@/utils/antdIconRender";
-import { buildTree, capitalize, flattenTree, removeEmptyChildren } from "@/utils";
+import { buildTree, filterTableColumns, flattenTree, removeEmptyChildren } from "@/utils";
 import { NavigationForm } from "./components/NavigationForm";
 import { useAuth } from "@/providers/AuthContext";
 import { formatDate } from "@/utils/date";
@@ -108,35 +108,46 @@ export const Navigations = () => {
         setGlobalNavigations(navigations);
     }, [navigations])
 
-    const hiddenColumns: (keyof NavigationType)[] = ["parent_id", "created_at", "updated_at"];
-
-    const dynamicColumns: ColumnsType<NavigationType> =
-        navigations?.[0]
-            ? (Object.keys(navigations[0]) as (keyof NavigationType)[])
-                .filter((column) => !hiddenColumns.includes(column))
-                .map((column) => ({
-                    title: capitalize(column),
-                    dataIndex: column,
-                    key: column,
-                    render: (value: any, _: NavigationType, rowIndex: number) => {
-                        switch (column) {
-                            case "id":
-                                return (pagination.current - 1) * pagination.pageSize + rowIndex + 1;
-                            case "icon":
-                                return antdIconRender(value);
-                            case "created_at":
-                                return formatDate(value);
-                            case "updated_at":
-                                return formatDate(value);
-                            default:
-                                return value;
-                        }
-                    },
-                }))
-            : [];
-
     const columns: ColumnsType<NavigationType> = [
-        ...dynamicColumns,
+        {
+            title: "Id",
+            dataIndex: "id",
+            key: "id",
+            render: (_: number, __: NavigationType, rowIndex) => (pagination.current - 1) * pagination.pageSize + rowIndex + 1
+        },
+        {
+            title: "Name",
+            dataIndex: "name",
+            key: "name"
+        },
+        {
+            title: "Route",
+            dataIndex: "route",
+            key: "route"
+        },
+        {
+            title: "Icon",
+            dataIndex: "icon",
+            key: "icon",
+            render: (icon: string) => antdIconRender(icon)
+        },
+        {
+            title: "Order",
+            dataIndex: "order",
+            key: "order"
+        },
+         {
+            title: "Created At",
+            dataIndex: "created_at",
+            key: "created_at",
+            render: (created_at) => formatDate(created_at)
+        },
+        {
+            title: "Updated At",
+            dataIndex: "updated_at",
+            key: "updated_at",
+            render: (updated_at) => formatDate(updated_at)
+        },
         {
             title: "Action",
             key: "action",
@@ -155,12 +166,20 @@ export const Navigations = () => {
                         cancelText="No"
                         onConfirm={() => onDelete(record.id)}
                     >
-                        <DeleteOutlined className="cursor-pointer !text-red-600" />
+                        <DeleteOutlined
+                            className="cursor-pointer !text-red-600"
+                        />
                     </Popconfirm>
                 </Space>
             ),
         },
     ];
+    const hiddenColumns: (keyof NavigationType)[] = ["parent_id", "created_at", "updated_at"];
+    const filteredColumns = filterTableColumns<NavigationType>(
+        columns,
+        navigations,
+        hiddenColumns
+    );
 
     return (
         <Flex vertical gap="middle">
@@ -176,7 +195,7 @@ export const Navigations = () => {
             <Table
                 rowKey="id"
                 dataSource={navigations}
-                columns={columns}
+                columns={navigations.length ? filteredColumns : []}
                 loading={loading}
                 pagination={{
                     current: pagination.current,
