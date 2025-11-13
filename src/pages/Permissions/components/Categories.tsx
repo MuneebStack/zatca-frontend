@@ -4,12 +4,9 @@ import type { ColumnsType } from "antd/es/table";
 import { axiosClient } from "@/services/axiosClient";
 import type { PaginationType } from "@/types";
 import { successMessageHandler } from "@/utils/notificationHandler";
-import { capitalize } from "@/utils";
-import type { Permission } from "@/types/permission";
-
-interface PermissionExtended extends Permission {
-    loading: boolean
-}
+import { capitalize, filterTableColumns } from "@/utils";
+import type { PermissionType } from "@/types/permission";
+import { formatDate } from "@/utils/date";
 
 interface CategoriesProps {
     relatedType?: "role" | "user",
@@ -17,7 +14,7 @@ interface CategoriesProps {
 }
 
 export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }) => {
-    const [permissions, setPermissions] = useState<PermissionExtended[]>([]);
+    const [permissions, setPermissions] = useState<PermissionType[]>([]);
     const [updatingIds, setUpdatingIds] = useState<Set<number>>(new Set());
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -86,7 +83,13 @@ export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }
         return () => controller.abort();
     }, [relatedId, relatedType, pagination.current, pagination.pageSize]);
 
-    const columns: ColumnsType<PermissionExtended> = [
+    const columns: ColumnsType<PermissionType> = [
+        {
+            title: "Id",
+            dataIndex: "id",
+            key: "id",
+            render: (_: number, __: PermissionType, rowIndex) => (pagination.current - 1) * pagination.pageSize + rowIndex + 1
+        },
         {
             title: "Permission",
             dataIndex: "name",
@@ -98,6 +101,18 @@ export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }
             dataIndex: "category",
             key: "category",
             render: (category) => capitalize(category),
+        },
+        {
+            title: "Created At",
+            dataIndex: "created_at",
+            key: "created_at",
+            render: (created_at) => formatDate(created_at)
+        },
+        {
+            title: "Updated At",
+            dataIndex: "updated_at",
+            key: "updated_at",
+            render: (updated_at) => formatDate(updated_at)
         },
         {
             title: "Assigned",
@@ -112,11 +127,17 @@ export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }
             ),
         },
     ];
+    const hiddenColumns: (keyof PermissionType)[] = ["created_at", "updated_at"];
+    const filteredColumns = filterTableColumns<PermissionType>(
+        columns,
+        permissions,
+        hiddenColumns
+    );
 
     return (
         <Table
             rowKey="id"
-            columns={columns}
+            columns={permissions.length ? filteredColumns : []}
             dataSource={permissions}
             loading={loading}
             pagination={{
