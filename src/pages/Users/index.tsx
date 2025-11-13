@@ -1,6 +1,6 @@
 import { axiosClient } from "@/services/axiosClient";
 import type { UserType } from "@/types/user";
-import { Button, Flex, Popconfirm, Space, Table, Typography, Modal, Form } from "antd"
+import { Button, Flex, Popconfirm, Space, Table, Typography, Modal, Form, Switch } from "antd"
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
@@ -35,6 +35,25 @@ export const Users = () => {
                 }
             })
             .catch((error) => (error))
+            .finally(() => setLoading(false))
+    }
+
+    const onToggleActive = (userId: number, isActive: boolean) => {
+        setLoading(true);
+        axiosClient
+            .patch(`portal/users/${userId}/toggle-active`, {
+                is_active: isActive
+            })
+            .then(({ data: responseData }) => {
+                if (responseData?.data) {
+                    setUsers((prev) =>
+                        prev.map((user) =>
+                            user.id === userId ? { ...user, is_active: isActive } : user
+                        )
+                    );
+                    successMessageHandler(responseData);
+                }
+            })
             .finally(() => setLoading(false))
     }
 
@@ -89,27 +108,48 @@ export const Users = () => {
         {
             title: "Action",
             key: "action",
-            render: (_: unknown, record: UserType) => (
-                <Space size="middle">
-                    <EditOutlined
-                        className="cursor-pointer !text-green-500"
-                        onClick={() => {
-                            editForm.setFieldsValue(record);
-                            setIsEditModalOpen(true);
-                        }}
-                    />
-                    <Popconfirm
-                        title="Are you sure to delete this user?"
-                        okText="Yes"
-                        cancelText="No"
-                        onConfirm={() => onDelete(record.id)}
-                    >
-                        <DeleteOutlined
-                            className="cursor-pointer !text-red-600"
+            children: [
+                {
+                    title: "Active",
+                    key: "active",
+                    align: "center",
+                    width: "10%",
+                    render: (_, record: UserType) => (
+                        <Switch
+                            checked={record.is_active}
+                            size="small"
+                            onChange={(checked) => onToggleActive(record.id, checked)}
                         />
-                    </Popconfirm>
-                </Space>
-            ),
+                    ),
+                },
+                {
+                    title: "General",
+                    key: "general",
+                    align: "center",
+                    width: "10%",
+                    render: (_, record: UserType) => (
+                        <Space size="middle">
+                            <EditOutlined
+                                className="cursor-pointer !text-green-500"
+                                onClick={() => {
+                                    editForm.setFieldsValue(record);
+                                    setIsEditModalOpen(true);
+                                }}
+                            />
+                            <Popconfirm
+                                title="Are you sure to delete this user?"
+                                okText="Yes"
+                                cancelText="No"
+                                onConfirm={() => onDelete(record.id)}
+                            >
+                                <DeleteOutlined
+                                    className="cursor-pointer !text-red-600"
+                                />
+                            </Popconfirm>
+                        </Space>
+                    ),
+                },
+            ],
         }
     ];
     const hiddenColumns: (keyof UserType)[] = ["created_at", "updated_at"];
