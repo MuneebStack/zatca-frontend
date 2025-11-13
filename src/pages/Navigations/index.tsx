@@ -110,9 +110,10 @@ export const Navigations = () => {
 
     const columns: ColumnsType<NavigationType> = [
         {
-            title: "Id",
+            title: "#",
             dataIndex: "id",
             key: "id",
+            width: "5%",
             render: (_: number, __: NavigationType, rowIndex) => (pagination.current - 1) * pagination.pageSize + rowIndex + 1
         },
         {
@@ -209,7 +210,7 @@ export const Navigations = () => {
                 }}
                 bordered
                 expandable={{
-                    rowExpandable: (record) => !record.route
+                    rowExpandable: (record) => !record?.route
                 }}
             />
 

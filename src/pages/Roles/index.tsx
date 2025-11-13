@@ -7,6 +7,7 @@ import type { PaginationType } from "@/types";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import { RoleForm } from "./components/RoleForm";
 import type { RoleType } from "@/types/role";
+import { filterTableColumns } from "@/utils";
 
 const { Title } = Typography;
 
@@ -104,6 +105,12 @@ export const Roles = () => {
             ),
         },
     ];
+    const hiddenColumns: (keyof RoleType)[] = ["created_at", "updated_at"];
+    const filteredColumns = filterTableColumns<RoleType>(
+        columns,
+        roles,
+        hiddenColumns
+    );
 
     return (
         <Flex vertical gap="middle">
@@ -119,7 +126,7 @@ export const Roles = () => {
             <Table
                 rowKey="id"
                 dataSource={roles}
-                columns={columns}
+                columns={filteredColumns}
                 loading={loading}
                 pagination={{
                     current: pagination.current,

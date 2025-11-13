@@ -85,9 +85,10 @@ export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }
 
     const columns: ColumnsType<PermissionType> = [
         {
-            title: "Id",
+            title: "#",
             dataIndex: "id",
             key: "id",
+            width: "5%",
             render: (_: number, __: PermissionType, rowIndex) => (pagination.current - 1) * pagination.pageSize + rowIndex + 1
         },
         {

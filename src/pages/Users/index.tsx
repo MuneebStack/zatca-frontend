@@ -7,6 +7,7 @@ import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { successMessageHandler } from "@/utils/notificationHandler";
 import type { PaginationType } from "@/types";
 import { UserForm } from "./components/UserForm";
+import { filterTableColumns } from "@/utils";
 
 const { Title } = Typography;
 
@@ -111,6 +112,12 @@ export const Users = () => {
             ),
         }
     ];
+    const hiddenColumns: (keyof UserType)[] = ["created_at", "updated_at"];
+    const filteredColumns = filterTableColumns<UserType>(
+        columns,
+        users,
+        hiddenColumns
+    );
 
     return (
         <Flex vertical gap="middle">
@@ -126,7 +133,7 @@ export const Users = () => {
             <Table
                 rowKey="id"
                 dataSource={users}
-                columns={columns}
+                columns={filteredColumns}
                 loading={loading}
                 pagination={{
                     current: pagination.current,
