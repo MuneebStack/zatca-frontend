@@ -17,6 +17,7 @@ interface AuthContextType {
     modules: ShortModuleType;
     navigations: NavigationType[];
     setNavigations: React.Dispatch<React.SetStateAction<NavigationType[]>>;
+    userPermissions: string[];
     login: (token: string, expiresAt: string) => void;
     logout: (showMessage?: boolean) => void;
 }
@@ -32,6 +33,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
     const [configs, setConfigs] = useState<ConfigType>({});
     const [modules, setModules] = useState<ShortModuleType>([]);
     const [navigations, setNavigations] = useState<NavigationType[]>([]);
+    const [userPermissions, setUserPermissions] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
@@ -52,6 +54,8 @@ const AuthProvider = ({ children }: AuthProviderType) => {
         setUser(undefined);
         setConfigs([]);
         setModules([]);
+        setNavigations([]);
+        setUserPermissions([]);
 
         localStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -91,11 +95,12 @@ const AuthProvider = ({ children }: AuthProviderType) => {
             .then(({ data: responseData}) => {
                 if (responseData?.data) {
                     const payload = responseData.data;
-                    const { user, configs, modules, navigations: fetchedNavigations } = payload;
+                    const { user, configs, modules, navigations: fetchedNavigations, user_permissions: fetchedUserPermissions } = payload;
                     setUser(user);
                     setConfigs(configs);
                     setModules(modules);
                     setNavigations(fetchedNavigations);
+                    setUserPermissions(fetchedUserPermissions ?? []);
                 }
             })
             .catch((error) => (error))
@@ -125,6 +130,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
                 modules,
                 navigations,
                 setNavigations,
+                userPermissions,
                 login,
                 logout
             }}

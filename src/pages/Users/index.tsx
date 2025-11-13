@@ -8,6 +8,7 @@ import { successMessageHandler } from "@/utils/notificationHandler";
 import type { PaginationType } from "@/types";
 import { UserForm } from "./components/UserForm";
 import { filterTableColumns } from "@/utils";
+import { usePermission } from "@/hooks/usePermission";
 
 const { Title } = Typography;
 
@@ -23,6 +24,14 @@ export const Users = () => {
     const [editForm] = Form.useForm();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    const { hasModulePermission } = usePermission();
+
+    const canViewAll = hasModulePermission("user", "INDEX");
+    const canCreate = hasModulePermission("user", "STORE");
+    const canUpdate = hasModulePermission("user", "UPDATE");
+    const canDelete = hasModulePermission("user", "DELETE");
+    const canToggleActive = hasModulePermission("user", "TOGGLE_ACTIVE");
 
     const onDelete = (userId: number) => {
         setLoading(true);
@@ -88,6 +97,66 @@ export const Users = () => {
         return () => controller.abort();
     }, [pagination.current, pagination.pageSize]);
 
+    const actionChildren = [];
+
+    if (canToggleActive) {
+        actionChildren.push({
+            title: "Active",
+            key: "active",
+            align: "center",
+            width: "10%",
+            render: (_: unknown, record: UserType) => (
+                <Switch
+                    checked={record.is_active}
+                    size="small"
+                    onChange={(checked) => onToggleActive(record.id, checked)}
+                />
+            ),
+        });
+    }
+
+    if (canUpdate || canDelete) {
+        actionChildren.push({
+            title: "General",
+            key: "general",
+            align: "center",
+            width: "10%",
+            render: (_: unknown, record: UserType) => (
+                <Space size="middle">
+                    {canUpdate && (
+                        <EditOutlined
+                            className="cursor-pointer !text-green-500"
+                            onClick={() => {
+                                editForm.setFieldsValue(record);
+                                setIsEditModalOpen(true);
+                            }}
+                        />
+                    )}
+                    {canDelete && (
+                        <Popconfirm
+                            title="Are you sure to delete this user?"
+                            okText="Yes"
+                            cancelText="No"
+                            onConfirm={() => onDelete(record.id)}
+                        >
+                            <DeleteOutlined
+                                className="cursor-pointer !text-red-600"
+                            />
+                        </Popconfirm>
+                    )}
+                </Space>
+            ),
+        });
+    }
+    const actionColumn = actionChildren.length > 0
+        ? {
+            title: "Action",
+            key: "action",
+            children: actionChildren,
+        }
+        : null;
+
+
     const columns: ColumnsType<UserType> = [
         {
             title: "#",
@@ -105,52 +174,7 @@ export const Users = () => {
             dataIndex: "email",
             key: "email",
         },
-        {
-            title: "Action",
-            key: "action",
-            children: [
-                {
-                    title: "Active",
-                    key: "active",
-                    align: "center",
-                    width: "10%",
-                    render: (_, record: UserType) => (
-                        <Switch
-                            checked={record.is_active}
-                            size="small"
-                            onChange={(checked) => onToggleActive(record.id, checked)}
-                        />
-                    ),
-                },
-                {
-                    title: "General",
-                    key: "general",
-                    align: "center",
-                    width: "10%",
-                    render: (_, record: UserType) => (
-                        <Space size="middle">
-                            <EditOutlined
-                                className="cursor-pointer !text-green-500"
-                                onClick={() => {
-                                    editForm.setFieldsValue(record);
-                                    setIsEditModalOpen(true);
-                                }}
-                            />
-                            <Popconfirm
-                                title="Are you sure to delete this user?"
-                                okText="Yes"
-                                cancelText="No"
-                                onConfirm={() => onDelete(record.id)}
-                            >
-                                <DeleteOutlined
-                                    className="cursor-pointer !text-red-600"
-                                />
-                            </Popconfirm>
-                        </Space>
-                    ),
-                },
-            ],
-        }
+        ...(actionColumn ? [actionColumn] : [])
     ];
     const hiddenColumns: (keyof UserType)[] = ["created_at", "updated_at"];
     const filteredColumns = filterTableColumns<UserType>(
@@ -165,62 +189,70 @@ export const Users = () => {
                 <Title level={4}>
                     Users
                 </Title>
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalOpen(true)}>
-                    Create User
-                </Button>
+                {canCreate && (
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalOpen(true)}>
+                        Create User
+                    </Button>
+                )}
             </Flex>
 
-            <Table
-                rowKey="id"
-                dataSource={users}
-                columns={filteredColumns}
-                loading={loading}
-                pagination={{
-                    current: pagination.current,
-                    pageSize: pagination.pageSize,
-                    total: pagination.total,
-                    showSizeChanger: true,
-                    pageSizeOptions: ["10", "25", "50", "100"],
-                    onChange: (page, pageSize) => {
-                        setPagination((prev) => ({ ...prev, current: page, pageSize }));
-                    },
-                }}
-                bordered
-            />
-
-            <Modal
-                title="Create User"
-                open={isCreateModalOpen}
-                onCancel={() => setIsCreateModalOpen(false)}
-                afterClose={() => createForm.resetFields()}
-                footer={null}
-            >
-                <UserForm
-                    form={createForm}
-                    mode="create"
-                    onSuccess={(newUser) => {
-                        setUsers((prev) => [newUser, ...prev]);
-                        setIsCreateModalOpen(false);
+            {canViewAll && (
+                <Table
+                    rowKey="id"
+                    dataSource={users}
+                    columns={filteredColumns}
+                    loading={loading}
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        total: pagination.total,
+                        showSizeChanger: true,
+                        pageSizeOptions: ["10", "25", "50", "100"],
+                        onChange: (page, pageSize) => {
+                            setPagination((prev) => ({ ...prev, current: page, pageSize }));
+                        },
                     }}
+                    bordered
                 />
-            </Modal>
+            )}
 
-            <Modal
-                title="Edit User"
-                open={isEditModalOpen}
-                onCancel={() => setIsEditModalOpen(false)}
-                afterClose={() => editForm.resetFields()}
-                footer={null}
-            >
-                <UserForm
-                    form={editForm}
-                    mode="edit"
-                    onSuccess={(updatedUser) => {
-                        setUsers((prev) => prev.map(user => user.id === updatedUser.id ? updatedUser : user));
-                        setIsEditModalOpen(false);
-                    }}
-                />
-            </Modal>
-        </Flex>
+            {canCreate && (
+                <Modal
+                    title="Create User"
+                    open={isCreateModalOpen}
+                    onCancel={() => setIsCreateModalOpen(false)}
+                    afterClose={() => createForm.resetFields()}
+                    footer={null}
+                >
+                    <UserForm
+                        form={createForm}
+                        mode="create"
+                        onSuccess={(newUser) => {
+                            setUsers((prev) => [newUser, ...prev]);
+                            setIsCreateModalOpen(false);
+                        }}
+                    />
+                </Modal>
+            )}
+
+            {canUpdate && (
+                <Modal
+                    title="Edit User"
+                    open={isEditModalOpen}
+                    onCancel={() => setIsEditModalOpen(false)}
+                    afterClose={() => editForm.resetFields()}
+                    footer={null}
+                >
+                    <UserForm
+                        form={editForm}
+                        mode="edit"
+                        onSuccess={(updatedUser) => {
+                            setUsers((prev) => prev.map(user => user.id === updatedUser.id ? updatedUser : user));
+                            setIsEditModalOpen(false);
+                        }}
+                    />
+                </Modal>
+            )}
+        </Flex >
     )
 }
