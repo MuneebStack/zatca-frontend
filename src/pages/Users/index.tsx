@@ -1,7 +1,7 @@
 import { axiosClient } from "@/services/axiosClient";
 import type { UserType } from "@/types/user";
 import { Button, Flex, Popconfirm, Space, Table, Typography, Modal, Form, Switch } from "antd"
-import type { ColumnsType } from "antd/es/table";
+import type { ColumnsType, ColumnType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { successMessageHandler } from "@/utils/notificationHandler";
@@ -13,6 +13,14 @@ import { usePermission } from "@/hooks/usePermission";
 const { Title } = Typography;
 
 export const Users = () => {
+    const { hasModulePermission } = usePermission();
+
+    const canViewAll = hasModulePermission("user", "INDEX");
+    const canCreate = hasModulePermission("user", "STORE");
+    const canUpdate = hasModulePermission("user", "UPDATE");
+    const canDelete = hasModulePermission("user", "DESTROY");
+    const canToggleActive = hasModulePermission("user", "TOGGLE_ACTIVE");
+
     const [users, setUsers] = useState<UserType[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -24,14 +32,6 @@ export const Users = () => {
     const [editForm] = Form.useForm();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-    const { hasModulePermission } = usePermission();
-
-    const canViewAll = hasModulePermission("user", "INDEX");
-    const canCreate = hasModulePermission("user", "STORE");
-    const canUpdate = hasModulePermission("user", "UPDATE");
-    const canDelete = hasModulePermission("user", "DELETE");
-    const canToggleActive = hasModulePermission("user", "TOGGLE_ACTIVE");
 
     const onDelete = (userId: number) => {
         setLoading(true);
@@ -67,6 +67,8 @@ export const Users = () => {
     }
 
     useEffect(() => {
+        if (canViewAll) return;
+        
         const controller = new AbortController();
 
         setLoading(true);
@@ -97,8 +99,7 @@ export const Users = () => {
         return () => controller.abort();
     }, [pagination.current, pagination.pageSize]);
 
-    const actionChildren = [];
-
+    const actionChildren: ColumnType<UserType>[] = [];
     if (canToggleActive) {
         actionChildren.push({
             title: "Active",
@@ -114,7 +115,6 @@ export const Users = () => {
             ),
         });
     }
-
     if (canUpdate || canDelete) {
         actionChildren.push({
             title: "General",
@@ -148,14 +148,6 @@ export const Users = () => {
             ),
         });
     }
-    const actionColumn = actionChildren.length > 0
-        ? {
-            title: "Action",
-            key: "action",
-            children: actionChildren,
-        }
-        : null;
-
 
     const columns: ColumnsType<UserType> = [
         {
@@ -174,7 +166,11 @@ export const Users = () => {
             dataIndex: "email",
             key: "email",
         },
-        ...(actionColumn ? [actionColumn] : [])
+        ...(actionChildren.length > 0 ? [{
+            title: "Action",
+            key: "action",
+            children: actionChildren,
+        }] : []),
     ];
     const hiddenColumns: (keyof UserType)[] = ["created_at", "updated_at"];
     const filteredColumns = filterTableColumns<UserType>(
