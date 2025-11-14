@@ -7,6 +7,7 @@ import { successMessageHandler } from "@/utils/notificationHandler";
 import { capitalize, filterTableColumns } from "@/utils";
 import type { PermissionType } from "@/types/permission";
 import { formatDate } from "@/utils/date";
+import { usePermission } from "@/hooks/usePermission";
 
 interface CategoriesProps {
     relatedType?: "role" | "user",
@@ -14,6 +15,10 @@ interface CategoriesProps {
 }
 
 export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }) => {
+    const { hasModulePermission } = usePermission();
+
+    const canSync = hasModulePermission("permission", "SYNC");
+
     const [permissions, setPermissions] = useState<PermissionType[]>([]);
     const [updatingIds, setUpdatingIds] = useState<Set<number>>(new Set());
     const [pagination, setPagination] = useState<PaginationType>({
@@ -115,18 +120,18 @@ export const Categories: React.FC<CategoriesProps> = ({ relatedType, relatedId }
             key: "updated_at",
             render: (updated_at) => formatDate(updated_at)
         },
-        {
+        ...(canSync ? [{
             title: "Assigned",
             key: "assigned",
-            align: "center",
-            render: (_, record) => (
+            align: "center" as const,
+            render: (_: unknown, record: PermissionType) => (
                 <Switch
                     checked={!!record.assigned}
                     loading={updatingIds.has(record.id)}
                     onChange={(checked) => handleToggle(record.id, checked)}
                 />
             ),
-        },
+        }] : []),
     ];
     const hiddenColumns: (keyof PermissionType)[] = ["created_at", "updated_at"];
     const filteredColumns = filterTableColumns<PermissionType>(
