@@ -8,10 +8,18 @@ import { successMessageHandler } from "@/utils/notificationHandler";
 import { RoleForm } from "./components/RoleForm";
 import type { RoleType } from "@/types/role";
 import { filterTableColumns } from "@/utils";
+import { usePermission } from "@/hooks/usePermission";
 
 const { Title } = Typography;
 
 export const Roles = () => {
+    const { hasModulePermission } = usePermission();
+
+    const canViewAll = hasModulePermission("role", "INDEX");
+    const canCreate = hasModulePermission("role", "STORE");
+    const canUpdate = hasModulePermission("role", "UPDATE");
+    const canDelete = hasModulePermission("role", "DESTROY");
+
     const [roles, setRoles] = useState<RoleType[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -37,6 +45,8 @@ export const Roles = () => {
     };
 
     useEffect(() => {
+        if (!canViewAll) return;
+        
         const controller = new AbortController();
 
         setLoading(true);
@@ -79,31 +89,35 @@ export const Roles = () => {
             dataIndex: "name",
             key: "name"
         },
-        {
+        ...(((canUpdate || canDelete) ? [{
             title: "Action",
             key: "action",
             render: (_: unknown, record: RoleType) => (
                 <Space size="middle">
-                    <EditOutlined
-                        className="cursor-pointer !text-green-500"
-                        onClick={() => {
-                            form.setFieldsValue(record);
-                            setIsEditModalOpen(true);
-                        }}
-                    />
-                    <Popconfirm
-                        title="Are you sure to delete this role?"
-                        okText="Yes"
-                        cancelText="No"
-                        onConfirm={() => onDelete(record.id)}
-                    >
-                        <DeleteOutlined
-                            className="cursor-pointer !text-red-600"
+                    {canUpdate &&
+                        <EditOutlined
+                            className="cursor-pointer !text-green-500"
+                            onClick={() => {
+                                form.setFieldsValue(record);
+                                setIsEditModalOpen(true);
+                            }}
                         />
-                    </Popconfirm>
+                    }
+                    {canDelete &&
+                        <Popconfirm
+                            title="Are you sure to delete this role?"
+                            okText="Yes"
+                            cancelText="No"
+                            onConfirm={() => onDelete(record.id)}
+                        >
+                            <DeleteOutlined
+                                className="cursor-pointer !text-red-600"
+                            />
+                        </Popconfirm>
+                    }
                 </Space>
             ),
-        },
+        }] : [])),
     ];
     const hiddenColumns: (keyof RoleType)[] = ["created_at", "updated_at"];
     const filteredColumns = filterTableColumns<RoleType>(
@@ -118,62 +132,70 @@ export const Roles = () => {
                 <Title level={4}>
                     Roles
                 </Title>
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalOpen(true)}>
-                    Create Role
-                </Button>
+                {canCreate && (
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalOpen(true)}>
+                        Create Role
+                    </Button>
+                )}
             </Flex>
 
-            <Table
-                rowKey="id"
-                dataSource={roles}
-                columns={filteredColumns}
-                loading={loading}
-                pagination={{
-                    current: pagination.current,
-                    pageSize: pagination.pageSize,
-                    total: pagination.total,
-                    showSizeChanger: true,
-                    pageSizeOptions: ["10", "25", "50", "100"],
-                    onChange: (page, pageSize) => {
-                        setPagination((prev) => ({ ...prev, current: page, pageSize }));
-                    },
-                }}
-                bordered
-            />
-
-            <Modal
-                title="Create Role"
-                open={isCreateModalOpen}
-                onCancel={() => setIsCreateModalOpen(false)}
-                afterClose={() => form.resetFields()}
-                footer={null}
-            >
-                <RoleForm
-                    form={form}
-                    mode="create"
-                    onSuccess={(newRole) => {
-                        setRoles((prev) => [newRole, ...prev]);
-                        setIsCreateModalOpen(false);
+            {canViewAll && (
+                <Table
+                    rowKey="id"
+                    dataSource={roles}
+                    columns={filteredColumns}
+                    loading={loading}
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        total: pagination.total,
+                        showSizeChanger: true,
+                        pageSizeOptions: ["10", "25", "50", "100"],
+                        onChange: (page, pageSize) => {
+                            setPagination((prev) => ({ ...prev, current: page, pageSize }));
+                        },
                     }}
+                    bordered
                 />
-            </Modal>
+            )}
 
-            <Modal
-                title="Edit Role"
-                open={isEditModalOpen}
-                onCancel={() => setIsEditModalOpen(false)}
-                afterClose={() => form.resetFields()}
-                footer={null}
-            >
-                <RoleForm
-                    form={form}
-                    mode="edit"
-                    onSuccess={(updatedRole) => {
-                        setRoles((prev) => prev.map(role => role.id === updatedRole.id ? updatedRole : role));
-                        setIsEditModalOpen(false);
-                    }}
-                />
-            </Modal>
+            {canCreate && (
+                <Modal
+                    title="Create Role"
+                    open={isCreateModalOpen}
+                    onCancel={() => setIsCreateModalOpen(false)}
+                    afterClose={() => form.resetFields()}
+                    footer={null}
+                >
+                    <RoleForm
+                        form={form}
+                        mode="create"
+                        onSuccess={(newRole) => {
+                            setRoles((prev) => [newRole, ...prev]);
+                            setIsCreateModalOpen(false);
+                        }}
+                    />
+                </Modal>
+            )}
+
+            {canUpdate && (
+                <Modal
+                    title="Edit Role"
+                    open={isEditModalOpen}
+                    onCancel={() => setIsEditModalOpen(false)}
+                    afterClose={() => form.resetFields()}
+                    footer={null}
+                >
+                    <RoleForm
+                        form={form}
+                        mode="edit"
+                        onSuccess={(updatedRole) => {
+                            setRoles((prev) => prev.map(role => role.id === updatedRole.id ? updatedRole : role));
+                            setIsEditModalOpen(false);
+                        }}
+                    />
+                </Modal>
+            )}
         </Flex>
     );
 }
