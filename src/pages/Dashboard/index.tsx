@@ -5,10 +5,16 @@ import { WidgetCard } from "./components/WidgetCard";
 import { WidgetSidebar } from "./components/WidgetSidebar";
 import { axiosClient } from "@/services/axiosClient";
 import type { WidgetType } from "@/types/widget";
+import { usePermission } from "@/hooks/usePermission";
 
 const { Title } = Typography;
 
 export function Dashboard() {
+    const { hasModulePermission } = usePermission();
+
+    const canViewActiveWidgets = hasModulePermission("widget", "ACTIVE");
+    const canViewWidgetData = hasModulePermission("widget", "DATA");
+
     const [widgets, setWidgets] = useState<WidgetType[]>([]);
     const [selectedWidgetNames, setSelectedWidgetNames] = useState<WidgetType["name"][]>([]);
     const [openDrawer, setOpenDrawer] = useState(false);
@@ -23,6 +29,8 @@ export function Dashboard() {
     }
 
     useEffect(() => {
+        if (!canViewActiveWidgets && canViewWidgetData) return;
+
         const controller = new AbortController();
 
         setLoading(true);
@@ -57,25 +65,34 @@ export function Dashboard() {
                     <Title level={4}>
                         Dashboard
                     </Title>
-                    <Button
-                        type="primary"
-                        icon={<SettingOutlined />}
-                        onClick={() => setOpenDrawer(true)}
-                    >
-                        Manage Widgets
-                    </Button>
+                    {
+                        canViewActiveWidgets && canViewWidgetData &&
+                        <Button
+                            type="primary"
+                            icon={<SettingOutlined />}
+                            onClick={() => setOpenDrawer(true)}
+                        >
+                            Manage Widgets
+                        </Button>
+                    }
                 </Flex>
 
-                {selectedWidgets.length ? (
-                    <Row gutter={[16, 16]}>
-                        {selectedWidgets.map((widget) => (
-                            <Col key={widget.id} xs={24} sm={12} lg={8}>
-                                <WidgetCard widget={widget} />
-                            </Col>
-                        ))}
-                    </Row>
-                ) : (
-                    <Empty description="No widgets selected" />
+                {canViewActiveWidgets && canViewWidgetData && (
+                    <>
+                        {
+                            selectedWidgets.length ? (
+                                <Row gutter={[16, 16]}>
+                                    {selectedWidgets.map((widget) => (
+                                        <Col key={widget.id} xs={24} sm={12} lg={8}>
+                                            <WidgetCard widget={widget} />
+                                        </Col>
+                                    ))}
+                                </Row>
+                            ) : (
+                                <Empty description="No widgets selected" />
+                            )
+                        }
+                    </>
                 )}
             </Flex>
 
