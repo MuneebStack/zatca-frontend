@@ -12,6 +12,7 @@ import { formatDate, toUtcString } from "@/utils/date";
 import dayjs from "dayjs";
 import type { ColumnsType } from "antd/es/table";
 import { capitalize } from "@/utils";
+import { usePermission } from "@/hooks/usePermission";
 
 const { Option } = Select;
 
@@ -22,6 +23,11 @@ interface BuilderProps {
 type AccessConfigType = Record<string, ModuleDataType>;
 
 export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
+  const { hasModulePermission } = usePermission();
+
+  const canViewModuleData = hasModulePermission("data_access", "MODULE_DATA");
+  const canSyncEntity = hasModulePermission("data_access", "SYNC_ENTITY");
+
   const { modules } = useAuth();
   const [currentModule, setCurrentModule] = useState<ModuleType>();
   const [pagination, setPagination] = useState<PaginationType>({
@@ -181,13 +187,13 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
   }, [relatedType, relatedId]);
 
   useEffect(() => {
-    if (!selectedModule) return;
+    if (!canViewModuleData || !selectedModule) return;
 
     const controller = new AbortController();
 
     setLoading(true);
     axiosClient
-      .get("portal/data-access/module", {
+      .get("portal/data-access/module-data", {
         params: {
           page: pagination.current,
           per_page: pagination.pageSize,
@@ -267,30 +273,34 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               <Button onClick={() => setIsViewModalOpen(true)} disabled={viewLoading}>
                 View
               </Button>
-              <Button type="primary" onClick={onSave} disabled={loading}>
-                Save
-              </Button>
+              {canSyncEntity && (
+                <Button type="primary" onClick={onSave} disabled={loading}>
+                  Save
+                </Button>
+              )}
             </Space>
           </Col>
         </Row>
-        <Space wrap>
-          {currentModule?.filters.map((filter) => (
-            <DynamicField
-              key={filter.key}
-              field={filter}
-              value={selectedFilters[filter.key]}
-              loading={loading}
-              onChange={(value) => {
-                setSelectedFilters((prev) => ({
-                  ...prev,
-                  [filter.key]: value,
-                }))
-              }}
-              classname="!mb-0"
-            />
-          ))}
-        </Space>
-        {selectedModule && (
+        {canViewModuleData && (
+          <Space wrap>
+            {currentModule?.filters.map((filter) => (
+              <DynamicField
+                key={filter.key}
+                field={filter}
+                value={selectedFilters[filter.key]}
+                loading={loading}
+                onChange={(value) => {
+                  setSelectedFilters((prev) => ({
+                    ...prev,
+                    [filter.key]: value,
+                  }))
+                }}
+                classname="!mb-0"
+              />
+            ))}
+          </Space>
+        )}
+        {canSyncEntity && selectedModule && (
           <Flex justify="end" gap={8} wrap>
             <Button onClick={() => setIsColumnModalOpen(true)} disabled={!currentModule || loading}>
               Select Columns
@@ -307,16 +317,12 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
 
       <Divider />
 
-      {selectedModule && (
+      {canViewModuleData && selectedModule && (
         <Table
           rowKey="id"
           dataSource={formatTableData(currentModule?.rows?.data || [])}
           columns={columns}
           loading={loading}
-          rowSelection={{
-            selectedRowKeys: moduleIds,
-            onChange: (keys: React.Key[]) => setModuleIds(keys)
-          }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
@@ -327,10 +333,18 @@ export const Builder: React.FC<BuilderProps> = ({ relatedType, relatedId }) => {
               setPagination((prev) => ({ ...prev, current: page, pageSize }));
             },
           }}
+          {...(canSyncEntity
+            ? {
+              rowSelection: {
+                selectedRowKeys: moduleIds,
+                onChange: (keys: React.Key[]) => setModuleIds(keys),
+              },
+            }
+            : {})}
         />
       )}
 
-      {currentModule && (
+      {canSyncEntity && currentModule && (
         <ColumnModal
           isOpen={isColumnModalOpen}
           onClose={() => setIsColumnModalOpen(false)}

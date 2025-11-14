@@ -5,11 +5,19 @@ import type { TabsProps } from "antd";
 import { UserSelector } from "@/components/UserSelector";
 import { RoleSelector } from "@/components/RoleSelector";
 import { Builder } from "./components/Builder";
+import { usePermission } from "@/hooks/usePermission";
 
 const { Text } = Typography;
 
 export const DataAccess: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<"role" | "user">("role");
+    const { hasModulePermission } = usePermission();
+
+    const canForUser = hasModulePermission("data_access", "FOR_USER");
+    const canForRole = hasModulePermission("data_access", "FOR_ROLE");
+
+    const defaultTab: "role" | "user" = canForRole ? "role" : canForUser ? "user" : "role";
+
+    const [activeTab, setActiveTab] = useState<"role" | "user">(defaultTab);
     const [selectedRoleId, setSelectedRoleId] = useState<string | number>();
     const [selectedUserId, setSelectedUserId] = useState<string | number>();
 
@@ -21,8 +29,9 @@ export const DataAccess: React.FC = () => {
         setSelectedUserId(undefined);
     };
 
-    const tabItems: TabsProps["items"] = [
-        {
+    const tabItems: TabsProps["items"] = [];
+    if (canForRole) {
+        tabItems.push({
             key: "role",
             label: "Role",
             children: (
@@ -32,8 +41,10 @@ export const DataAccess: React.FC = () => {
                     className="w-64 mt-2!"
                 />
             ),
-        },
-        {
+        })
+    }
+    if (canForUser) {
+        tabItems.push({
             key: "user",
             label: "User",
             children: (
@@ -43,8 +54,8 @@ export const DataAccess: React.FC = () => {
                     className="w-64 mt-2!"
                 />
             ),
-        },
-    ];
+        })
+    }
 
     return (
         <Card
@@ -60,19 +71,26 @@ export const DataAccess: React.FC = () => {
                 </Flex>
             }
         >
-            <Space direction="vertical" size={[36, 36]} className="w-full">
-                <Tabs
-                    activeKey={activeTab}
-                    onChange={handleTabChange}
-                    items={tabItems}
-                />
+            {
+                tabItems && (
+                    <Space direction="vertical" size={[36, 36]} className="w-full">
+                        <Tabs
+                            activeKey={activeTab}
+                            onChange={handleTabChange}
+                            items={tabItems}
+                        />
 
-                {relatedId && (
-                    <Card>
-                        <Builder relatedType={activeTab} relatedId={relatedId} />
-                    </Card>
-                )}
-            </Space>
+                        {relatedId && (
+                            <Card>
+                                <Builder 
+                                    relatedType={activeTab}
+                                    relatedId={relatedId}
+                                />
+                            </Card>
+                        )}
+                    </Space>
+                )
+            }
         </Card>
     );
 }
