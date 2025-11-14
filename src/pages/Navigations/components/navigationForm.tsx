@@ -127,7 +127,6 @@ export const NavigationForm = ({
                     {
                         validator: async (_, value) => {
                             const parentNavgiation = navigations.find((nav) => nav.id === value);
-                            console.log(parentNavgiation, value, navigations);
                             if (!parentNavgiation?.route) return Promise.resolve();
                             return Promise.reject(new Error("Parent menu cannot have a route"));
                         },

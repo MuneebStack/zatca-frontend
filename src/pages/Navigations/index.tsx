@@ -11,10 +11,18 @@ import { buildTree, filterTableColumns, flattenTree, removeEmptyChildren } from 
 import { NavigationForm } from "./components/NavigationForm";
 import { useAuth } from "@/providers/AuthContext";
 import { formatDate } from "@/utils/date";
+import { usePermission } from "@/hooks/usePermission";
 
 const { Title } = Typography;
 
 export const Navigations = () => {
+    const { hasModulePermission } = usePermission();
+
+    const canCreate = hasModulePermission("navigation", "STORE");
+    const canUpdate = hasModulePermission("navigation", "UPDATE");
+    const canDelete = hasModulePermission("navigation", "DESTROY");
+    const canViewTree = hasModulePermission("navigation", "TREE");
+
     const [navigations, setNavigations] = useState<NavigationType[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         current: 1,
@@ -69,6 +77,8 @@ export const Navigations = () => {
     };
 
     useEffect(() => {
+        if (!canViewTree) return;
+        
         const controller = new AbortController();
 
         setLoading(true);
@@ -137,7 +147,7 @@ export const Navigations = () => {
             dataIndex: "order",
             key: "order"
         },
-         {
+        {
             title: "Created At",
             dataIndex: "created_at",
             key: "created_at",
@@ -149,31 +159,35 @@ export const Navigations = () => {
             key: "updated_at",
             render: (updated_at) => formatDate(updated_at)
         },
-        {
+        ...(((canUpdate || canDelete) ? [{
             title: "Action",
             key: "action",
             render: (_: unknown, record: NavigationType) => (
                 <Space size="middle">
-                    <EditOutlined
-                        className="cursor-pointer !text-green-500"
-                        onClick={() => {
-                            form.setFieldsValue(record);
-                            setIsEditModalOpen(true);
-                        }}
-                    />
-                    <Popconfirm
-                        title="Are you sure to delete this navigation?"
-                        okText="Yes"
-                        cancelText="No"
-                        onConfirm={() => onDelete(record.id)}
-                    >
-                        <DeleteOutlined
-                            className="cursor-pointer !text-red-600"
+                    {canUpdate &&
+                        <EditOutlined
+                            className="cursor-pointer !text-green-500"
+                            onClick={() => {
+                                form.setFieldsValue(record);
+                                setIsEditModalOpen(true);
+                            }}
                         />
-                    </Popconfirm>
+                    }
+                    {canDelete &&
+                        <Popconfirm
+                            title="Are you sure to delete this navigation?"
+                            okText="Yes"
+                            cancelText="No"
+                            onConfirm={() => onDelete(record.id)}
+                        >
+                            <DeleteOutlined
+                                className="cursor-pointer !text-red-600"
+                            />
+                        </Popconfirm>
+                    }
                 </Space>
             ),
-        },
+        }] : []))
     ];
     const hiddenColumns: (keyof NavigationType)[] = ["parent_id", "created_at", "updated_at"];
     const filteredColumns = filterTableColumns<NavigationType>(
@@ -188,67 +202,75 @@ export const Navigations = () => {
                 <Title level={4}>
                     Navigations
                 </Title>
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalOpen(true)}>
-                    Create Navigations
-                </Button>
+                {canCreate && (
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalOpen(true)}>
+                        Create Navigations
+                    </Button>
+                )}
             </Flex>
 
-            <Table
-                rowKey="id"
-                dataSource={navigations}
-                columns={navigations.length ? filteredColumns : []}
-                loading={loading}
-                pagination={{
-                    current: pagination.current,
-                    pageSize: pagination.pageSize,
-                    total: pagination.total,
-                    showSizeChanger: true,
-                    pageSizeOptions: ["10", "25", "50", "100"],
-                    onChange: (page, pageSize) => {
-                        setPagination((prev) => ({ ...prev, current: page, pageSize }));
-                    },
-                }}
-                bordered
-                expandable={{
-                    rowExpandable: (record) => !record?.route
-                }}
-            />
-
-            <Modal
-                title="Create Navigation"
-                open={isCreateModalOpen}
-                onCancel={() => setIsCreateModalOpen(false)}
-                afterClose={() => form.resetFields()}
-                footer={null}
-            >
-                <NavigationForm
-                    form={form}
-                    mode="create"
-                    navigations={navigations}
-                    onSuccess={(newNavigation) => {
-                        setNavigations((prev) => insertNavigation(prev, newNavigation));
-                        setIsCreateModalOpen(false);
+            {canViewTree && (
+                <Table
+                    rowKey="id"
+                    dataSource={navigations}
+                    columns={navigations.length ? filteredColumns : []}
+                    loading={loading}
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        total: pagination.total,
+                        showSizeChanger: true,
+                        pageSizeOptions: ["10", "25", "50", "100"],
+                        onChange: (page, pageSize) => {
+                            setPagination((prev) => ({ ...prev, current: page, pageSize }));
+                        },
+                    }}
+                    bordered
+                    expandable={{
+                        rowExpandable: (record) => !record?.route
                     }}
                 />
-            </Modal>
+            )}
 
-            <Modal
-                title="Edit Navigation"
-                open={isEditModalOpen}
-                onCancel={() => setIsEditModalOpen(false)}
-                afterClose={() => form.resetFields()}
-                footer={null}
-            >
-                <NavigationForm
-                    form={form}
-                    mode="edit"
-                    navigations={navigations}
-                    onSuccess={(updatedNavigation) => {
-                        setNavigations((prev) => updateNavigation(prev, updatedNavigation));
-                        setIsEditModalOpen(false);
-                    }}
-                />
-            </Modal>
+            {canCreate && (
+                <Modal
+                    title="Create Navigation"
+                    open={isCreateModalOpen}
+                    onCancel={() => setIsCreateModalOpen(false)}
+                    afterClose={() => form.resetFields()}
+                    footer={null}
+                >
+                    <NavigationForm
+                        form={form}
+                        mode="create"
+                        navigations={navigations}
+                        onSuccess={(newNavigation) => {
+                            setNavigations((prev) => insertNavigation(prev, newNavigation));
+                            setIsCreateModalOpen(false);
+                        }}
+                    />
+                </Modal>
+            )}
+
+            {canUpdate && (
+                <Modal
+                    title="Edit Navigation"
+                    open={isEditModalOpen}
+                    onCancel={() => setIsEditModalOpen(false)}
+                    afterClose={() => form.resetFields()}
+                    footer={null}
+                >
+                    <NavigationForm
+                        form={form}
+                        mode="edit"
+                        navigations={navigations}
+                        onSuccess={(updatedNavigation) => {
+                            setNavigations((prev) => updateNavigation(prev, updatedNavigation));
+                            setIsEditModalOpen(false);
+                        }}
+                    />
+                </Modal>
+            )}
         </Flex>
     );
 };
