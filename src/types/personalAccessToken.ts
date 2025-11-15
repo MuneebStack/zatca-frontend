@@ -1,5 +1,5 @@
 
-export interface TokenType {
+export interface PersonalAccessTokenType {
     id: number;
     name: string;
     abilities: string[];

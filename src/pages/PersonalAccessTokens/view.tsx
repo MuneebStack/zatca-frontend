@@ -5,16 +5,16 @@ import { frontendErrorHandler } from "@/utils/notificationHandler";
 
 const { Text } = Typography;
 
-interface ViewTokenProps {
-    generatedToken: string
+interface ViewPersonalAccessTokenProps {
+    generatedPersonalAccessToken: string
 }
 
-export const ViewToken = ({ generatedToken }: ViewTokenProps) => {
+export const ViewPersonalAccessToken = ({ generatedPersonalAccessToken }: ViewPersonalAccessTokenProps) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
         try {
-            await navigator.clipboard.writeText(generatedToken);
+            await navigator.clipboard.writeText(generatedPersonalAccessToken);
             setCopied(true);
             setTimeout(() => setCopied(false), 1500);
         } catch {
@@ -28,13 +28,13 @@ export const ViewToken = ({ generatedToken }: ViewTokenProps) => {
     return (
         <>
             <Text type="secondary" className="block mt-4 mb-2">
-                This token is shown only once — please copy and store it securely.
+                This token is shown only once, please copy and store it securely.
             </Text>
             <Card
                 size="small"
             >
                 <code className="mr-2">
-                    {generatedToken}
+                    {generatedPersonalAccessToken}
                 </code>
                 <Button
                     type="text"

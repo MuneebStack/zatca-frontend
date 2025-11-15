@@ -9,7 +9,7 @@ import { PrivateRoute } from '@/middlewares/PrivateRoute';
 import { PublicRoute } from '@/middlewares/PublicRoute';
 import { Suspense } from 'react';
 import { FullPageLoader } from '@/components/FullPageLoader';
-import { Tokens } from '@/pages/Tokens';
+import { PersonalAccessTokens } from '@/pages/PersonalAccessTokens';
 import { Permissions } from '@/pages/Permissions';
 import { Navigations } from '@/pages/Navigations';
 import { DataAccess } from '@/pages/DataAccess';
@@ -24,7 +24,7 @@ const routeConfig = [
   { path: '/permissions', element: <Permissions />, name: 'Permissions' },
   { path: '/data-access', element: <DataAccess />, name: 'Data Access' },
   { path: '/navigations', element: <Navigations />, name: 'Navigations' },
-  { path: '/tokens', element: <Tokens />, name: 'Tokens' },
+  { path: '/tokens', element: <PersonalAccessTokens />, name: 'Tokens' },
   { path: '/settings', element: <Settings />, name: 'Settings' },
 ];
 
